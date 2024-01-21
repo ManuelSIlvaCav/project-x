@@ -1,41 +1,58 @@
-version: '3.8'
+version: '3.9'
 
 services:
   go-server:
-    depends_on:
-      - roach
     build:
-      context: .
+      context: ./server
     container_name: rest-server
     hostname: rest-server
+    env_file:
+      - .env
     networks:
       - mynet
     ports:
-      - 80:8080
-    environment:
-      - PGUSER=${PGUSER:-totoro}
-      - PGPASSWORD=${PGPASSWORD:?database password not set}
-      - PGHOST=${PGHOST:-db}
-      - PGPORT=${PGPORT:-26257}
-      - PGDATABASE=${PGDATABASE:-mydb}
+      - 3000:3000
+    depends_on:
+      - mongo
     deploy:
       restart_policy:
         condition: on-failure
-  roach:
-    image: cockroachdb/cockroach:latest-v20.1
-    container_name: roach
-    hostname: db
-    networks:
-      - mynet
+
+  # postgresdb:
+  #   image: postgres:latest
+  #   container_name: postgres_container
+  #   environment:
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #     - POSTGRES_DB=${DB_NAME}
+  #     - DATABASE_HOST=${DB_HOST}
+  #   ports:
+  #     - '1234:5432'
+  #   volumes:
+  #     - ./pg_data:/var/lib/postgresql/data
+  #   networks:
+  #     - mynet
+
+  mongo:
+    image: mongo:latest
     ports:
-      - 26257:26257
-      - 8080:8080
+      - 3003:3003
+    expose:
+      - 3003
+    restart: always
+    container_name: mongo_container
+    command: mongod --port=3003 --logpath /data/logs/mongolog.log --dbpath=/data/db
+    env_file:
+      - .env
     volumes:
-      - roach:/cockroach/cockroach-data
-    command: start-single-node --insecure
+      - mongo-data:/data/db
+      - mongo-data:/data/logs
+    
 
 volumes:
-  roach:
+  pg_data:
+  mongo-data:
+    driver: local
 
 networks:
   mynet:

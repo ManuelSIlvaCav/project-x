@@ -16,6 +16,10 @@ type Config struct {
 	Log struct {
 		RequestLogFormat string `yaml:"request_log_format" default:"${remote_ip} ${account_name} ${uri} ${method} ${status}"`
 	}
+	MongoDB struct {
+		MongoUri string `yaml:"mongo_uri" default:"mongodb://localhost:27017"`
+	}
+	Port string `yaml:"port" default:"3000"`
 }
 
 const (
@@ -33,16 +37,26 @@ func LoadAppConfig(yamlFile embed.FS) (*Config, string) {
 		env = flag.String("env", DEV, "Environment")
 		flag.Parse()
 	}
-	file, err := yamlFile.ReadFile(fmt.Sprintf(AppConfigPath, *env))
+
+	//Print what is in env file
+	fmt.Printf("Env file: %s\n", *env)
+
+	data, err := yamlFile.ReadFile(fmt.Sprintf(AppConfigPath, *env))
 	if err != nil {
 		fmt.Printf("Failed to read application.%s.yml: %s", *env, err)
 		os.Exit(ErrExitStatus)
 	}
 
+	//Print what is in env file
+	fmt.Printf("Env file: %s\n", string(data))
+
+	replaced := os.ExpandEnv(string(data))
+
 	config := &Config{}
-	if err := yaml.Unmarshal(file, config); err != nil {
+	if err := yaml.Unmarshal([]byte(replaced), config); err != nil {
 		fmt.Printf("Failed to unmarshall application.%s.yml: %s", *env, err)
 		os.Exit(ErrExitStatus)
 	}
+	fmt.Printf("Loaded application %+v\n", config)
 	return config, *env
 }

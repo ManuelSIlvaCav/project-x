@@ -14,7 +14,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 FROM scratch
 
 ENV ENV="docker"
+#Gotta add all the env variables needed and defined in .env 
 
 COPY --from=builder /app/server /app/
-EXPOSE 8080
+EXPOSE 3001
 ENTRYPOINT ["/app/server"]

@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"server/config"
+	"server/utils/config"
 
 	"go.uber.org/zap"
 	"gopkg.in/natefinch/lumberjack.v2"
