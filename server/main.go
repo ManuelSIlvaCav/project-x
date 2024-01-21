@@ -3,10 +3,12 @@ package main
 import (
 	"embed"
 	"fmt"
-	"server/config"
+	"server/api"
 	"server/container"
-	"server/logger"
 	"server/router"
+	"server/utils/config"
+	"server/utils/db/mongo"
+	"server/utils/logger"
 
 	"github.com/labstack/echo/v4"
 
@@ -26,11 +28,17 @@ func main() {
 	conf, env := config.LoadAppConfig(yamlFile)
 	logger := logger.InitLogger(env, zapYamlFile)
 
-	container := container.NewContainer(conf, env, logger)
+	//We need to create DB connection and pass it to container
+	mongoDB := mongo.LoadMongo(*conf)
 
-	router.Init(e, container)
+	container := container.NewContainer(conf, env, logger, mongoDB)
 
-	if err := e.Start(":8080"); err != nil {
+	//We pass the container to the api module
+	api := api.LoadAPIModules(container)
+
+	router.Init(e, container, api)
+
+	if err := e.Start(fmt.Sprintf(":%s", conf.Port)); err != nil {
 		//e.Logger.Fatal(err.Error())
 		fmt.Printf("Failed to start server: %s", err.Error())
 	}
