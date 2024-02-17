@@ -35,3 +35,13 @@ func (c *userModule) Routes(group *echo.Group) *echo.Group {
 	group.POST("", c.createUser)
 	return group
 }
+
+// Function that returns a map of "route": {handler, method}
+func (c *userModule) GetRoutes() map[string]map[string]echo.HandlerFunc {
+	return map[string]map[string]echo.HandlerFunc{
+		"/users": {
+			"GET":  c.users,
+			"POST": c.createUser,
+		},
+	}
+}

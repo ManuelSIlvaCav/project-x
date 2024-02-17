@@ -19,11 +19,11 @@ type ErrorController interface {
 }
 
 type errorController struct {
-	container container.Container
+	container *container.Container
 }
 
 // NewErrorController is constructor.
-func NewErrorController(container container.Container) ErrorController {
+func NewErrorController(container *container.Container) ErrorController {
 	return &errorController{container: container}
 }
 

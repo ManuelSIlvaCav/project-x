@@ -22,3 +22,5 @@ go.work
 .history
 .DS_Store
 pg_data
+
+*.log
