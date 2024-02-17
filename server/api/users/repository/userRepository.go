@@ -26,10 +26,14 @@ func (repo *userMongoRepository) CreateUser(ctx context.Context, user user_model
 	userCollection := mongoDB.Database("project-x").Collection("users")
 
 	result, err := userCollection.InsertOne(ctx, user)
+
 	if err != nil {
 		return "", err
 	}
-	return result.InsertedID.(primitive.ObjectID).String(), nil
+
+	repo.container.GetLogger().Info(ctx, "User inserted successfully", map[string]interface{}{"result": result})
+
+	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 
 }
 

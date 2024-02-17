@@ -14,11 +14,11 @@ type HealthController interface {
 }
 
 type healthController struct {
-	container container.Container
+	container *container.Container
 }
 
 // NewHealthController is constructor.
-func NewHealthController(container container.Container) HealthController {
+func NewHealthController(container *container.Container) HealthController {
 	return &healthController{container: container}
 }
 

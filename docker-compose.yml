@@ -17,6 +17,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    volumes:
+      - ./server:/app
 
   # postgresdb:
   #   image: postgres:latest
@@ -40,13 +42,15 @@ services:
     expose:
       - 3003
     restart: always
-    container_name: mongo_container
+    container_name: mongo
     command: mongod --port=3003 --logpath /data/logs/mongolog.log --dbpath=/data/db
     env_file:
       - .env
     volumes:
       - mongo-data:/data/db
       - mongo-data:/data/logs
+    networks:
+      - mynet
     
 
 volumes:

@@ -10,9 +10,12 @@ import (
 	"server/container"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+var validate = validator.New()
 
 func CreateUser(container container.Container, userRepository repository.UserRepository) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -25,6 +28,11 @@ func CreateUser(container container.Container, userRepository repository.UserRep
 
 		if err := c.Bind(&user); err != nil {
 			return c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: &echo.Map{"data": err.Error()}})
+		}
+
+		//use the validator library to validate required fields
+		if validationErr := validate.Struct(&user); validationErr != nil {
+			return c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: &echo.Map{"data": validationErr.Error()}})
 		}
 
 		newUser := user_models.User{

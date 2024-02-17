@@ -1,23 +1,28 @@
 package api
 
 import (
-	"fmt"
+	"server/api/auth"
 	"server/api/users"
 	"server/container"
 )
 
-type API struct {
-	userModule users.UserModule
+type API interface {
+	GetUserModule() users.UserModule
 }
 
-func LoadAPIModules(container container.Container) *API {
-	apiObj := &API{
+type api struct {
+	userModule users.UserModule
+	authModule auth.AuthModule
+}
+
+func NewAPI(container container.Container) *api {
+	apiObj := &api{
 		userModule: users.NewUserModule(container),
+		authModule: auth.NewAuthModule(container),
 	}
 	return apiObj
 }
 
-func (c *API) GetUserModule() users.UserModule {
-	fmt.Printf("Hello from api getUserModule")
-	return c.userModule
+func (a *api) GetUserModule() users.UserModule {
+	return a.userModule
 }

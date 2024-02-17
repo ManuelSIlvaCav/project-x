@@ -1,21 +1,21 @@
-FROM golang:1.21 as builder
+# Go Version
+FROM golang:1.21-rc-alpine3.17
 
-ENV GO111MODULE=on
+# Environment variables which CompileDaemon requires to run
+ENV PROJECT_DIR=/app \
+  GO111MODULE=on \
+  ENV="docker" \
+  CGO_ENABLED=0
 
+# Basic setup of the container
+RUN mkdir /app
+COPY .. /app
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
+# Get CompileDaemon
+RUN go get github.com/githubnemo/CompileDaemon
+RUN go install github.com/githubnemo/CompileDaemon
 
-COPY . .
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
-
-FROM scratch
-
-ENV ENV="docker"
-#Gotta add all the env variables needed and defined in .env 
-
-COPY --from=builder /app/server /app/
-EXPOSE 3001
-ENTRYPOINT ["/app/server"]
+# The build flag sets how to build after a change has been detected in the source code
+# The command flag sets how to run the app after it has been built
+ENTRYPOINT CompileDaemon -build="go build -o server" -command="./server"

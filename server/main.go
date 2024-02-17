@@ -1,47 +1,48 @@
 package main
 
 import (
-	"embed"
+	"context"
 	"fmt"
-	"server/api"
 	"server/container"
 	"server/router"
-	"server/utils/config"
-	"server/utils/db/mongo"
-	"server/utils/logger"
 
 	"github.com/labstack/echo/v4"
-
-	helper "server/helpers"
+	"go.uber.org/fx"
 )
 
-//go:embed resources/config/application.*.yml
-var yamlFile embed.FS
+func registerHooks(lifecycle fx.Lifecycle, e *echo.Echo, container *container.Container) {
+	lifecycle.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
 
-//go:embed resources/config/zaplogger.*.yml
-var zapYamlFile embed.FS
+			logger := container.GetLogger()
+			logger.Info(ctx, "Server started", nil)
+			logger.Info(ctx, "Server started7", nil)
+			go e.Start(fmt.Sprintf(":%s", container.GetConfig().Port))
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			return e.Shutdown(ctx)
+		},
+	})
+}
 
 func main() {
-	helper.Help()
 
-	e := echo.New()
-	conf, env := config.LoadAppConfig(yamlFile)
-	logger := logger.InitLogger(env, zapYamlFile)
+	fmt.Println("Starting server wth new log vv3")
 
-	//We need to create DB connection and pass it to container
-	mongoDB := mongo.LoadMongo(*conf)
+	fx.New(fx.Options(
+		container.Modules,
+		router.Modules,
+		fx.Provide(NewServer),
+		fx.Invoke(registerHooks),
+	)).Run()
 
-	container := container.NewContainer(conf, env, logger, mongoDB)
+	// e := echo.New()
 
-	//We pass the container to the api module
-	api := api.LoadAPIModules(container)
-
-	router.Init(e, container, api)
-
-	if err := e.Start(fmt.Sprintf(":%s", conf.Port)); err != nil {
-		//e.Logger.Fatal(err.Error())
-		fmt.Printf("Failed to start server: %s", err.Error())
-	}
+	// if err := e.Start(fmt.Sprintf(":%s", conf.Port)); err != nil {
+	// 	//e.Logger.Fatal(err.Error())
+	// 	fmt.Printf("Failed to start server: %s", err.Error())
+	// }
 
 	//defer rep.Close()
 
