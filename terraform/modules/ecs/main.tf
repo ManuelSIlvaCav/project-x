@@ -100,7 +100,7 @@ resource "aws_security_group" "ecs_container_instance" {
 
 ## --------- ECR Repository ---------
 resource "aws_ecr_repository" "ecr" {
-  name                 = "$${var.service_name}_${var.environment}"
+  name                 = "${var.service_name}_${var.environment}"
   force_delete         = false
   image_tag_mutability = "MUTABLE"
 
