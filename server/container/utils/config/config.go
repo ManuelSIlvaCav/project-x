@@ -17,7 +17,8 @@ type Config struct {
 		RequestLogFormat string `yaml:"request_log_format" default:"${remote_ip} ${account_name} ${uri} ${method} ${status}"`
 	}
 	MongoDB struct {
-		MongoUri string `yaml:"mongo_uri" default:"mongodb://localhost:27017"`
+		MongoUri     string `yaml:"mongo_uri" default:"mongodb://localhost:27017"`
+		MainDatabase string `yaml:"database_name" default:"project-x"`
 	}
 	Port string `yaml:"port" default:"3000"`
 	Env  string

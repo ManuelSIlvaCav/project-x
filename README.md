@@ -29,9 +29,33 @@ https://medium.com/pengenpaham/postgres-database-migration-using-golang-migrate-
 
 ## TODO
 
-1. Build user module with auth using JWT
+Build a github action for a full pipeline with the architecture in terraform
 
-2. Build a template for responses and decouple from echo So it is easier to change if we want to move out of echo. Modules are not responsible for handling echo types nor handlers
+1. Build a simple deployment of server in GO to be consumed with app runner
 
-- Return the response on the handler functions
-- Then foreach route you return with their handler, map it out in echo format echoHandler in there route.
+- https://medium.com/@kumarapkvel/step-by-step-guide-to-host-a-simple-rest-api-in-aws-docker-aws-app-runner-6adcda4f144a
+
+2. Build a Files module for handling File uploads and interact with AWS S3
+
+3. Users/Auth API
+
+- Register
+- Login
+-
+
+4. Files API
+
+- Upload File
+- Download File
+
+5. Build a Python Docker image Flask
+
+a. Build a python api that handles the parsing of a CV with the
+
+- /parse
+
+  - Template
+  - File
+
+- https://seeai.hashnode.dev/transforming-unstructured-documents-to-standardized-formats-with-gpt-building-a-resume-parser
+- https://python.langchain.com/docs/expression_language/cookbook/prompt_llm_parser

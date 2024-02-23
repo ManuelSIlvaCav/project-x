@@ -8,6 +8,7 @@ database:
 
 mongodb:
   mongo_uri: ${MONGO_URI}
+  database_name: ${MONGO_DB}
 
 extension:
   master_generator: false

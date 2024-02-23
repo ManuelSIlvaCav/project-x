@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	logTitle      = "[logger] "
+	logTitle      = "[project-x] "
 	sqlFormat     = logTitle + "%s"
 	messageFormat = logTitle + "%s, %s"
 	errorFormat   = logTitle + "%s, %s, %s"

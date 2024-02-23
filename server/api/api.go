@@ -2,27 +2,24 @@ package api
 
 import (
 	"server/api/auth"
+	"server/api/profiles"
 	"server/api/users"
 	"server/container"
+	"server/router"
 )
 
-type API interface {
-	GetUserModule() users.UserModule
+type Api struct {
+	userModule *users.UserModule
+	authModule *auth.AuthModule
 }
 
-type api struct {
-	userModule users.UserModule
-	authModule auth.AuthModule
-}
+func NewAPI(container *container.Container, router *router.Router,
+	usersModule *users.UserModule,
+	authModule *auth.AuthModule, profilesModule *profiles.ProfilesModule) *Api {
 
-func NewAPI(container container.Container) *api {
-	apiObj := &api{
-		userModule: users.NewUserModule(container),
-		authModule: auth.NewAuthModule(container),
+	apiObj := &Api{
+		userModule: usersModule,
+		authModule: authModule,
 	}
 	return apiObj
-}
-
-func (a *api) GetUserModule() users.UserModule {
-	return a.userModule
 }

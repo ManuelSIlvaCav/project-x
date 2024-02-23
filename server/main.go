@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"server/api"
 	"server/container"
 	"server/router"
 
@@ -10,13 +11,11 @@ import (
 	"go.uber.org/fx"
 )
 
-func registerHooks(lifecycle fx.Lifecycle, e *echo.Echo, container *container.Container) {
+func registerHooks(lifecycle fx.Lifecycle, e *echo.Echo, container *container.Container, router *router.Router, api *api.Api) {
 	lifecycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-
 			logger := container.GetLogger()
-			logger.Info(ctx, "Server started", nil)
-			logger.Info(ctx, "Server started7", nil)
+			logger.Info(ctx, fmt.Sprintf("Server started on :%s asd", container.GetConfig().Port))
 			go e.Start(fmt.Sprintf(":%s", container.GetConfig().Port))
 			return nil
 		},
@@ -32,18 +31,11 @@ func main() {
 
 	fx.New(fx.Options(
 		container.Modules,
+		api.Modules,
+		//users.Modules,
 		router.Modules,
 		fx.Provide(NewServer),
 		fx.Invoke(registerHooks),
 	)).Run()
-
-	// e := echo.New()
-
-	// if err := e.Start(fmt.Sprintf(":%s", conf.Port)); err != nil {
-	// 	//e.Logger.Fatal(err.Error())
-	// 	fmt.Printf("Failed to start server: %s", err.Error())
-	// }
-
-	//defer rep.Close()
 
 }

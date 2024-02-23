@@ -12,10 +12,12 @@ import (
 
 type MongoDB interface {
 	GetClient() *mongo.Client
+	GetCollection(collection string) *mongo.Collection
 }
 
 type mongoDB struct {
-	db *mongo.Client
+	db               *mongo.Client
+	mainDatabaseName string
 }
 
 func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
@@ -45,7 +47,8 @@ func NewMongoDB(config config.Config, logger logger.Logger) *mongoDB {
 	client, _ := Init(config, logger)
 
 	db := &mongoDB{
-		db: client,
+		db:               client,
+		mainDatabaseName: config.MongoDB.MainDatabase,
 	}
 
 	return db
@@ -53,4 +56,8 @@ func NewMongoDB(config config.Config, logger logger.Logger) *mongoDB {
 
 func (db *mongoDB) GetClient() *mongo.Client {
 	return db.db
+}
+
+func (db *mongoDB) GetCollection(collection string) *mongo.Collection {
+	return db.db.Database(db.mainDatabaseName).Collection(collection)
 }

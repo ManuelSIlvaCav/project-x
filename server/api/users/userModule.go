@@ -1,47 +1,30 @@
 package users
 
 import (
-	users_handlers "server/api/users/handlers"
+	interfaces "server/api/interfaces"
+	handlers "server/api/users/handlers"
 	"server/api/users/repository"
 	"server/container"
-
-	"github.com/labstack/echo/v4"
+	"server/router"
 )
 
-type UserModule interface {
-	Routes(group *echo.Group) *echo.Group
+type UserModule struct {
+	UserRepository repository.UserRepository
 }
 
-type userModule struct {
-	users           echo.HandlerFunc
-	createUser      echo.HandlerFunc
-	container       container.Container
-	userRespository repository.UserRepository
-}
+func NewUserModule(container *container.Container,
+	router *router.Router) *UserModule {
 
-func NewUserModule(container container.Container) UserModule {
 	userRepository := repository.NewUserMongoRepository(container)
 
-	return &userModule{
-		users:           users_handlers.Users(container),
-		createUser:      users_handlers.CreateUser(container, userRepository),
-		container:       container,
-		userRespository: userRepository,
-	}
-}
+	routes := []interfaces.Route{}
+	routes = append(routes,
+		router.BuildRoute("GET", "", handlers.Users(container, userRepository)),
+		router.BuildRoute("POST", "/register", handlers.Register(container, userRepository)))
 
-func (c *userModule) Routes(group *echo.Group) *echo.Group {
-	group.GET("", c.users)
-	group.POST("", c.createUser)
-	return group
-}
-
-// Function that returns a map of "route": {handler, method}
-func (c *userModule) GetRoutes() map[string]map[string]echo.HandlerFunc {
-	return map[string]map[string]echo.HandlerFunc{
-		"/users": {
-			"GET":  c.users,
-			"POST": c.createUser,
-		},
+	userModule := &UserModule{
+		UserRepository: userRepository,
 	}
+	router.SetRoutes("/users", routes)
+	return userModule
 }

@@ -1,22 +1,42 @@
 package auth
 
 import (
+	"server/api/users"
 	"server/container"
+	"server/router"
+
+	handlers "server/api/auth/handlers"
+	interfaces "server/api/interfaces"
 
 	"github.com/labstack/echo/v4"
 )
 
-type AuthModule interface {
-	Routes(group *echo.Group) *echo.Group
+type AuthModule struct {
+	loginHandler echo.HandlerFunc
 }
 
-type authModule struct {
+func NewAuthModule(container *container.Container, router *router.Router, userModule *users.UserModule) *AuthModule {
+	authModule := &AuthModule{
+		loginHandler: handlers.Login(userModule),
+	}
+	authModule.SetRoutes(router)
+	return authModule
 }
 
-func NewAuthModule(container container.Container) AuthModule {
-	return &authModule{}
+func (c *AuthModule) GetRoutes() []interfaces.Route {
+	routes := []interfaces.Route{}
+	routes = append(routes,
+		interfaces.Route{
+			Method:  "POST",
+			Path:    "/login",
+			Handler: c.loginHandler,
+		},
+	)
+	return routes
 }
 
-func (c *authModule) Routes(group *echo.Group) *echo.Group {
-	return group
+func (c *AuthModule) SetRoutes(router *router.Router) error {
+	routes := c.GetRoutes()
+	router.RegisterRoutes("/auth", routes)
+	return nil
 }

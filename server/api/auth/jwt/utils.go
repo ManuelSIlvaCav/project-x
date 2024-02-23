@@ -1,0 +1,54 @@
+package jwt
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v4"
+	"github.com/labstack/echo/v4"
+)
+
+// jwtCustomClaims are custom claims extending default ones.
+// See https://github.com/golang-jwt/jwt for more examples
+type JwtCustomClaims struct {
+	Name  string `json:"name"`
+	Admin bool   `json:"admin"`
+	jwt.RegisteredClaims
+}
+
+func GetJWTConfig() echojwt.Config {
+	config := echojwt.Config{
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return new(JwtCustomClaims)
+		},
+		SigningKey: []byte("secret"), //TODO Get secret from config
+	}
+	return config
+}
+
+func AuthMiddleware(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JwtCustomClaims)
+	name := claims.Name
+	return c.String(http.StatusOK, "Welcome "+name+"!")
+}
+
+func GetJWTToken(firstName string, lastName string) (t string, err error) {
+	// Set custom claims
+	claims := &JwtCustomClaims{
+		fmt.Sprintf("%s %s", firstName, lastName),
+		true,
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		},
+	}
+
+	// Create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Generate encoded token and send it as response.
+	return token.SignedString([]byte("secret"))
+
+}
