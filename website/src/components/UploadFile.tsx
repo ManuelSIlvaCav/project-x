@@ -1,18 +1,31 @@
 "use client";
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
 
 export default function UploadFile({
   title,
   fieldName,
   className,
+  file,
   ...props
 }: React.ComponentPropsWithoutRef<"div"> & {
   title?: string;
   fieldName: string;
+  file?: File | undefined;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string | null;
 }) {
-  const [file, setFile] = useState<File | undefined>(undefined);
+  console.log({ title, fieldName, className, props, x: 1 });
+
+  //const [file, setFile] = useState<File | undefined>(undefined);
+
+  async function handleFileChange(e: any) {
+    console.log("calling file change");
+    const file = e.target.files?.[0];
+    console.log("setting file");
+    //setFile(file);
+    props.onChange?.(e);
+  }
+
   return (
     <>
       <div className="col-span-full">
@@ -47,10 +60,12 @@ export default function UploadFile({
                       name={fieldName}
                       type="file"
                       className="sr-only"
-                      {...props}
+                      //onChange={handleFileChange}
                       onChange={(e) => {
-                        setFile(e.target?.files?.[0]);
+                        console.log("calling file change");
+                        handleFileChange(e);
                       }}
+                      {...props}
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>

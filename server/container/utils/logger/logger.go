@@ -30,9 +30,10 @@ type Config struct {
 // Logger is an alternative implementation of *gorm.Logger
 type Logger interface {
 	GetZapLogger() *zap.SugaredLogger
-	Info(ctx context.Context, msg string, data ...interface{})
-	Warn(ctx context.Context, msg string, data ...interface{})
-	Error(ctx context.Context, msg string, data ...interface{})
+	Panic(ctx context.Context, msg string, data ...interface{})
+	Info(msg string, data ...interface{})
+	Warn(msg string, data ...interface{})
+	Error(msg string, data ...interface{})
 	Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error)
 }
 
@@ -40,24 +41,28 @@ type logger struct {
 	Zap *zap.SugaredLogger
 }
 
-// Error implements Logger.
-func (log *logger) Error(ctx context.Context, msg string, data ...interface{}) {
-	log.Zap.Errorf(messageFormat, append([]interface{}{msg}, data...)...)
+// Info implements Logger.
+func (log *logger) Info(msg string, data ...interface{}) {
+	log.Zap.Infow(msg, append([]interface{}{}, data...)...)
 }
 
-// Info implements Logger.
-func (log *logger) Info(ctx context.Context, msg string, data ...interface{}) {
-	log.Zap.Infof(messageFormat, append([]interface{}{msg}, data...)...)
+// Warn implements Logger.
+func (log *logger) Warn(msg string, data ...interface{}) {
+	log.Zap.Warnw(msg, append([]interface{}{}, data...)...)
+}
+
+// Error implements Logger.
+func (log *logger) Error(msg string, data ...interface{}) {
+	log.Zap.Errorw(msg, append([]interface{}{}, data...)...)
+}
+
+func (log *logger) Panic(ctx context.Context, msg string, data ...interface{}) {
+	log.Zap.Panicf(msg, append([]interface{}{msg}, data...)...)
 }
 
 // Trace implements Logger.
 func (log *logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	log.Zap.Infof(messageFormat)
-}
-
-// Warn implements Logger.
-func (log *logger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	log.Zap.Warnf(messageFormat, append([]interface{}{msg}, data...)...)
 }
 
 // NewLogger is constructor for logger
@@ -73,25 +78,29 @@ var zapYamlFile embed.FS
 func InitLogger(configObj config.Config) Logger {
 
 	configYaml, err := zapYamlFile.ReadFile(fmt.Sprintf(config.LoggerConfigPath, configObj.Env))
+
 	if err != nil {
 		fmt.Printf("Failed to read logger configuration: %s", err)
 		os.Exit(config.ErrExitStatus)
 	}
+
 	var myConfig *Config
 	if err = yaml.Unmarshal(configYaml, &myConfig); err != nil {
 		fmt.Printf("Failed to read zap logger configuration: %s", err)
 		os.Exit(config.ErrExitStatus)
 	}
+
 	var zap *zap.Logger
-	zap, err = build(myConfig)
+	zap, err = build(myConfig, configObj)
 	if err != nil {
 		fmt.Printf("Failed to compose zap logger : %s", err)
 		os.Exit(config.ErrExitStatus)
 	}
+
 	sugar := zap.Sugar()
 	// set package varriable logger.
 	log := NewLogger(sugar)
-	log.GetZapLogger().Infof("Success to read zap logger configuration: zaplogger." + configObj.Env + ".yml")
+	log.GetZapLogger().Infow("Success to read zap logger configuration: zaplogger." + configObj.Env + ".yml")
 	_ = zap.Sync()
 	return log
 }

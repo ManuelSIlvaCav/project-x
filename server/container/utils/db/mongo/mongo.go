@@ -23,7 +23,7 @@ type mongoDB struct {
 func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
 	ctx := context.Background()
 
-	logger.Info(ctx, fmt.Sprintf("Connecting to %s\n", config.MongoDB.MongoUri))
+	logger.Info(fmt.Sprintf("Connecting to %s\n", config.MongoDB.MongoUri))
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MongoDB.MongoUri))
@@ -32,14 +32,14 @@ func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	logger.Info(ctx, "Sending Ping to mongo server", nil)
+	logger.Info("Sending Ping to mongo server")
 	// Check the connection
 	if err = client.Ping(ctx, nil); err != nil {
-		logger.Error(ctx, "Could not ping remote mongo server", err)
+		logger.Error("Could not ping remote mongo server", "error", err)
 		return nil, err
 	}
 
-	fmt.Println("Connected to MongoDB")
+	logger.Info("Connected to MongoDB!")
 	return client, nil
 }
 

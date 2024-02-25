@@ -1,7 +1,6 @@
 package router
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"server/container"
@@ -65,7 +64,7 @@ func setHealthController(e *echo.Echo, container *container.Container) {
 	e.GET(config.APIHealth, func(c echo.Context) error { return healthController.GetHealthCheck(c) })
 	// get logger from contaner
 	logger := container.GetLogger()
-	logger.Info(context.TODO(), "Health check route is set up.")
+	logger.Info("Health check route is set up.")
 }
 
 // We register the domain in the group and then we register the routes for that module

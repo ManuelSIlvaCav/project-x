@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   go-server:
@@ -8,6 +8,10 @@ services:
     hostname: rest-server
     env_file:
       - .env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=eu-west-2
     networks:
       - mynet
     ports:
@@ -19,6 +23,7 @@ services:
         condition: on-failure
     volumes:
       - ./server:/app
+      - $HOME/.aws/credentials:/home/app/.aws/credentials:ro # for aws credentials
 
   # postgresdb:
   #   image: postgres:latest
@@ -51,7 +56,6 @@ services:
       - mongo-data:/data/logs
     networks:
       - mynet
-    
 
 volumes:
   pg_data:

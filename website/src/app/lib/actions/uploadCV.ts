@@ -3,30 +3,31 @@
 export async function uploadCV(prevState: any, formData: FormData) {
   const url = `${process.env.API_PATH}/profiles/upload-cv`;
   try {
-    const file = formData.get("upload_file") as File;
-    console.log("file", file);
-    const body = JSON.stringify({
-      upload_file: file,
-      user_id: "user_id", //formData.get("user_id"),
-    });
+    const file = formData.get("cv") as File;
+    const email = formData.get("email") as string;
+    console.log("logging", { file, email });
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("cv", file);
+    formDataToSend.append("user_id", email);
 
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
-      body,
+      body: formDataToSend,
     });
     const data = await response?.json();
 
     if (!response.ok) {
-      console.log("something wrong", { data, formData: body });
+      console.log("something wrong", { data });
       return { message: data?.message ?? "Something went wrong" };
     }
 
-    console.log("response", response.statusText);
+    console.log("response", { status: response.status, data });
   } catch (error) {
-    console.error("Error:", { error, url, prevState });
+    console.error("Error:", { error, url });
     return { message: "Error: Something went wrong. Please try again." };
   }
 }

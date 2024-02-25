@@ -13,8 +13,7 @@ import (
 
 type (
 	CVData struct {
-		UploadFile string `json:"upload_file" validate:"required"`
-		UserId     string `json:"user_id" validate:"required"`
+		UserId string `json:"user_id" form:"user_id" validate:"required"`
 	}
 )
 
@@ -22,14 +21,18 @@ var validate = validator.New()
 
 func UploadCV(container *container.Container, fileModule *files_module.FilesModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx := context.Background()
+		logger := container.GetLogger()
+
+		_, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
 
 		var cvData CVData
 
+		logger.Info("Starting", "cv", "Data")
+
 		if err := c.Bind(&cvData); err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
-
 		}
 
 		//use the validator library to validate required fields
@@ -37,8 +40,30 @@ func UploadCV(container *container.Container, fileModule *files_module.FilesModu
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
 		}
 
+		file, err := c.FormFile("cv")
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
+		}
+
+		src, err := file.Open()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
+		}
+
+		defer src.Close()
+
 		//We want to upload the CV to s3 files and save the File Object reference in the user profile
+		result, err := fileModule.FileService.UploadFile(file.Filename, src)
+
 		time.Sleep(4 * time.Second)
+
+		if err != nil {
+			logger.Error("Failed to upload CV", "error", err)
+			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": "failed to upload CV"})
+		}
+
+		logger.Info("CV uploaded successfully", "result", result)
 
 		//We will upsert the user profile with the new file object reference
 

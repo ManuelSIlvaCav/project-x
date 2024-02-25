@@ -31,7 +31,7 @@ func (repo *userRepository) CreateUser(ctx context.Context, user user_models.Use
 		return "", err
 	}
 
-	repo.container.GetLogger().Info(ctx, "User inserted successfully", map[string]interface{}{"result": result})
+	repo.container.GetLogger().Info("User inserted successfully", map[string]interface{}{"result": result})
 
 	return result.InsertedID.(primitive.ObjectID).Hex(), nil
 

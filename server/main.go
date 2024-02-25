@@ -15,7 +15,7 @@ func registerHooks(lifecycle fx.Lifecycle, e *echo.Echo, container *container.Co
 	lifecycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger := container.GetLogger()
-			logger.Info(ctx, fmt.Sprintf("Server started on :%s asd", container.GetConfig().Port))
+			logger.Info(fmt.Sprintf("Server started on :%s asd", container.GetConfig().Port))
 			go e.Start(fmt.Sprintf(":%s", container.GetConfig().Port))
 			return nil
 		},

@@ -1,5 +1,7 @@
 package files_services
 
+import "io"
+
 type FileService interface {
-	UploadFile() (string, error)
+	UploadFile(fileName string, body io.Reader) (string, error)
 }

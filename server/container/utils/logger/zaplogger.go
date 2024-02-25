@@ -3,22 +3,36 @@ package logger
 import (
 	"errors"
 	"os"
+	"server/container/utils/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func build(cfg *Config) (*zap.Logger, error) {
-	var zapCfg = cfg.ZapConfig
-	enc, _ := newEncoder(zapCfg)
-	writer, errWriter := openWriters(cfg)
+func build(cfg *Config, globConfig config.Config) (*zap.Logger, error) {
+	// var zapCfg = cfg.ZapConfig
+	// enc, _ := newEncoder(zapCfg)
+	// writer, errWriter := openWriters(cfg)
 
-	if zapCfg.Level == (zap.AtomicLevel{}) {
-		return nil, errors.New("missing Level")
-	}
+	// if zapCfg.Level == (zap.AtomicLevel{}) {
+	// 	return nil, errors.New("missing Level")
+	// }
 
-	log := zap.New(zapcore.NewCore(enc, writer, zapCfg.Level), buildOptions(zapCfg, errWriter)...)
+	// log := zap.New(zapcore.NewCore(enc, writer, zapCfg.Level), buildOptions(zapCfg, errWriter)...)
+
+	//return log, nil
+
+	//Default logger
+	// if globConfig.Env == "prod" {
+	// 	log := zap.Must(zap.NewProduction())
+	// 	defer log.Sync()
+	// 	return log, nil
+
+	// }
+	log := zap.Must(zap.NewProduction())
+	defer log.Sync()
+
 	return log, nil
 }
 

@@ -1,4 +1,4 @@
-# misc-utils
+# project-x
 
 ## Execute single container
 
@@ -14,6 +14,11 @@
 Implementation for Docker images ref: https://christiangiacomi.com/posts/multi-stage-docker-image-go/
 
 # Terraform
+
+Important to setup env variables
+
+> export AWS_ACCESS_KEY_ID=""
+> export AWS_SECRET_ACCESS_KEY=""
 
 - https://spacelift.io/blog/terraform-ecs
 - https://nexgeneerz.io/aws-computing-with-ecs-ec2-terraform/
@@ -31,31 +36,26 @@ https://medium.com/pengenpaham/postgres-database-migration-using-golang-migrate-
 
 Build a github action for a full pipeline with the architecture in terraform
 
-1. Build a simple deployment of server in GO to be consumed with app runner
+1. Build a single deployment of golang api on app runner
+
+- Deployment of golang image on ECR (custom)
 
 - https://medium.com/@kumarapkvel/step-by-step-guide-to-host-a-simple-rest-api-in-aws-docker-aws-app-runner-6adcda4f144a
 
-2. Build a Files module for handling File uploads and interact with AWS S3
+  1.2 Configure S3 Credentials for files upload
 
-3. Users/Auth API
+2. Finish Login Flow
 
-- Register
-- Login
--
+- Call Login from login Web
 
-4. Files API
+3. Candidate mock
 
-- Upload File
-- Download File
+- BUild a form to gather information
+  - Upload CV
+  - Work experiences with skills
+  - Education
+  - Links
+  - Questions
 
-5. Build a Python Docker image Flask
-
-a. Build a python api that handles the parsing of a CV with the
-
-- /parse
-
-  - Template
-  - File
-
-- https://seeai.hashnode.dev/transforming-unstructured-documents-to-standardized-formats-with-gpt-building-a-resume-parser
-- https://python.langchain.com/docs/expression_language/cookbook/prompt_llm_parser
+4. Make a github actions pipeline that works with terraform architecture
+5. Create a Read/Write only to S3 for public access on the Env file
