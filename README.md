@@ -1,11 +1,5 @@
 # project-x
 
-## Execute single container
-
-> docker build -f Dockerfile -t server-go .
-
-> docker run -dp 127.0.0.1:3000:3000 server-go -d
-
 ## With docker-compose
 
 > docker-compose build

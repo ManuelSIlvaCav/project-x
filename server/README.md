@@ -9,3 +9,9 @@
 # For Dependency injection we use uber library
 
 - https://uber-go.github.io/fx/get-started/
+
+## Execute single container
+
+> docker build -f Dockerfile -t server-go .
+
+> docker run -dp 127.0.0.1:3000:3000 server-go -d
