@@ -28,21 +28,26 @@ https://medium.com/pengenpaham/postgres-database-migration-using-golang-migrate-
 
 ## TODO
 
-Build a github action for a full pipeline with the architecture in terraform
-
 1. Build a single deployment of golang api on app runner
-
-- Deployment of golang image on ECR (custom)
 
 - https://medium.com/@kumarapkvel/step-by-step-guide-to-host-a-simple-rest-api-in-aws-docker-aws-app-runner-6adcda4f144a
 
-  1.2 Configure S3 Credentials for files upload
+2. Build mongo cluster and connect it to
 
-2. Finish Login Flow
+- App Runer
+- Terraform ECS
+
+3. Make a github actions pipeline that works with terraform architecture
+
+- Check out if on new image the ecs clusters update
+
+# Features
+
+1. Finish Login Flow
 
 - Call Login from login Web
 
-3. Candidate mock
+2. Candidate mock
 
 - BUild a form to gather information
   - Upload CV
@@ -50,6 +55,3 @@ Build a github action for a full pipeline with the architecture in terraform
   - Education
   - Links
   - Questions
-
-4. Make a github actions pipeline that works with terraform architecture
-5. Create a Read/Write only to S3 for public access on the Env file

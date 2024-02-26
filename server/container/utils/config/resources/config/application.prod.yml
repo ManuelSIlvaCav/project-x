@@ -1,0 +1,30 @@
+mongodb:
+  mongo_uri: ${MONGO_URI}
+  database_name: ${MONGO_DB}
+
+extension:
+  master_generator: false
+  cors_enabled: false
+  security_enabled: true
+
+log:
+  request_log_format: ${remote_ip} ${account_name} ${uri} ${method} ${status}
+
+security:
+  auth_path:
+    - /api/.*
+  exclude_path:
+    - /api/auth/login$
+    - /api/auth/logout$
+    - /api/health$
+  user_path:
+    - /api/.*
+  admin_path:
+    - /api/.*
+
+port: ${PORT}
+
+aws:
+  region: ${AWS_REGION}
+  access_key: ${AWS_ACCESS_KEY}
+  secret_key: ${AWS_SECRET_KEY}
