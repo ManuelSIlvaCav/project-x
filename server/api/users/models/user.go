@@ -2,14 +2,11 @@ package user_models
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type (
 	User struct {
-		Id primitive.ObjectID `json:"id,omitempty"`
-
+		ID        string `json:"id" bson:"_id,omitempty"`
 		FirstName string `json:"first_name" validate:"required,min=3,max=20" errormgs:"First name is required and must be between 3 and 20 characters"`
 
 		LastName string `json:"last_name" validate:"required,min=3,max=20" errormgs:"Last name is required and must be between 3 and 20 characters"`

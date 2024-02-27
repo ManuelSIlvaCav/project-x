@@ -1,25 +1,103 @@
 "use client";
+import { updateWorkExperience } from "@/app/lib/actions/updateWorkExperience";
+import { Button } from "@/components/Button";
 import Card from "@/components/Card";
 import CircularPlusButton from "@/components/CircularPlusButton";
-import DropDown from "@/components/Dropdown";
 import { TextField } from "@/components/Fields";
+import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
-import { useState } from "react";
+import months from "@/utils/months";
+import years from "@/utils/years";
+import { FormEvent, useState } from "react";
+import { useFormState } from "react-dom";
 
-function WorkExperienceQuickForm({ open }: { open: boolean }) {
+function CompaneOverviewForm() {
   return (
-    <Card className={`${open ? "" : "hidden"}`}>
+    <>
       <form>
         <div className="space-y-12">
-          <div className="border-b border-white/10 pb-12">
-            <TextField label="Role title" name="rol" />
-            <TextField label="Role title" name="company" />
-            <DropDown />
-            <TextArea label="Label" name="name" />
+          <div className="border-b border-white/10 pb-12 flex flex-col gap-2">
+            <TextArea label="Company description" name="company_description" />
+            <TextField label="Company website" name="company_website" />
+
+            <Button type="submit">{"Save and continue"}</Button>
           </div>
         </div>
       </form>
-    </Card>
+    </>
+  );
+}
+
+function RoleOverviewForm() {
+  return (
+    <>
+      <form>
+        <div className="space-y-12">
+          <div className="border-b border-white/10 pb-12 flex flex-col gap-2">
+            <TextArea label="Role description" name="role_description" />
+
+            <Button type="submit">{"Save and continue"}</Button>
+          </div>
+        </div>
+      </form>
+    </>
+  );
+}
+
+function WorkExperienceOverviewForm() {
+  const [state, dispatch] = useFormState(updateWorkExperience, null);
+  console.log({ workState: state });
+
+  async function onFormSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    console.log("form submitted", { e });
+    const formData = new FormData(e.currentTarget);
+    dispatch(formData);
+  }
+
+  return (
+    <form onSubmit={onFormSubmit}>
+      <div className="space-y-12">
+        <div className="border-b border-white/10 pb-12 flex flex-col gap-4">
+          <TextField label="Role title" name="role" />
+          <TextField label="Company name" name="company" />
+
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-bold">{"Start Date"}</p>
+            <div className="flex space-x-4">
+              <Select name="startDateMonth" label="Month" options={months()} />
+              <Select name="startDateYear" label="Year" options={years()} />
+            </div>
+          </div>
+          {/* Spacer div*/}
+          <div className="h-2" />
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-bold">{"End Date"}</p>
+            <div className="flex space-x-4">
+              <Select name="endDateMonth" label="Month" options={months()} />
+              <Select name="endDateYear" label="Year" options={years()} />
+            </div>
+          </div>
+          <div className="h-2" />
+          <Button type="submit">{"Save and continue"}</Button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+{
+  /* This is a 3 step wizard for creating the work experience of a candidate */
+}
+function WorkExperienceWizard({ open }: { open: boolean }) {
+  return (
+    <>
+      <Card className={`${open ? "" : "hidden"}`}>
+        <WorkExperienceOverviewForm />
+        <RoleOverviewForm />
+        <CompaneOverviewForm />
+      </Card>
+    </>
   );
 }
 
@@ -47,9 +125,8 @@ export default function WorkExperienceForm() {
       </div>
       {/* Spacer div*/}
       <div className="h-4" />
-      <WorkExperienceQuickForm open={quickFormOpen} />
-      {/* Spacer div*/}
-      <div className="h-4" />
+      <WorkExperienceWizard open={quickFormOpen} />
+
       <Card>
         <p className="italic font-light">
           {

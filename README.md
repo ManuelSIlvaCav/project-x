@@ -28,16 +28,12 @@ https://medium.com/pengenpaham/postgres-database-migration-using-golang-migrate-
 
 ## TODO
 
-1. Build a single deployment of golang api on app runner
-
-- https://medium.com/@kumarapkvel/step-by-step-guide-to-host-a-simple-rest-api-in-aws-docker-aws-app-runner-6adcda4f144a
-
-2. Build mongo cluster and connect it to
+1. Build mongo cluster and connect it to
 
 - App Runer
 - Terraform ECS
 
-3. Make a github actions pipeline that works with terraform architecture
+2. Make a github actions pipeline that works with terraform architecture
 
 - Check out if on new image the ecs clusters update
 

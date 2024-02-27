@@ -29,8 +29,6 @@ export default function Login() {
     <DashboardLayout>
       <>
         <CandidateProfile />
-        <CandidateProfile />
-        <CandidateProfile />
       </>
     </DashboardLayout>
   );

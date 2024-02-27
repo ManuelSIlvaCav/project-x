@@ -4,22 +4,22 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type (
 	UserProfile struct {
-		Id     primitive.ObjectID `json:"id,omitempty"`
-		UserID primitive.ObjectID `bson:"user_id" json:"user_id"`
+		ID     string             `json:"id" bson:"_id,omitempty"`
+		UserID primitive.ObjectID `bson:"userId" json:"userId"`
 
-		UploadCVFileID primitive.ObjectID `json:"uploadCVFileID" bson:"uploadCVFileID"`
+		UploadCVFileID primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
 
 		//Contact information
-		ContactInformation ContactInformation `json:"contactInformation" bson:"contactInformation"`
+		ContactInformation ContactInformation `json:"contactInformation,omitempty" bson:"contactInformation,omitempty"`
 
 		//Work experience
-		WorkExperience []WorkExperience `json:"workExperience" bson:"workExperience"`
+		WorkExperiences []*WorkExperience `json:"workExperiences,omitempty" bson:"workExperiences,omitempty"`
 
 		//Education
-		Education []Education `json:"education" bson:"education"`
+		Education []Education `json:"education,omitempty" bson:"education,omitempty"`
 
 		//Links
-		Links Links `json:"links" bson:"links"`
+		Links Links `json:"links,omitempty" bson:"links,omitempty"`
 	}
 
 	ContactInformation struct {
@@ -30,11 +30,16 @@ type (
 	}
 
 	WorkExperience struct {
-		Company     string `json:"company" bson:"company"`
-		Position    string `json:"position" bson:"position"`
-		StartDate   string `json:"startDate" bson:"startDate"`
-		EndDate     string `json:"endDate" bson:"endDate"`
-		Description string `json:"description" bson:"description"`
+		ID                 primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+		Company            string             `json:"company" bson:"company"`
+		Role               string             `json:"role" bson:"role"`
+		StartDateMonth     string             `json:"startDateMonth" bson:"startDateMonth"`
+		StartDateYear      string             `json:"startDateYear" bson:"startDateYear"`
+		EndDateYear        string             `json:"endDateYear" bson:"endDateYear"`
+		EndDateMonth       string             `json:"endDateMonth" bson:"endDateMonth"`
+		RoleDescription    string             `json:"roleDescription,omitempty" bson:"roleDescription,omitempty"`
+		CompanyDescription string             `json:"companyDescription,omitempty" bson:"companyDescription,omitempty"`
+		CompanyWebsite     string             `json:"companyWebsite,omitempty" bson:"companyWebsite,omitempty"`
 	}
 
 	Education struct {

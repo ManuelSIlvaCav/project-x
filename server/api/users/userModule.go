@@ -2,6 +2,7 @@ package users
 
 import (
 	interfaces "server/api/interfaces"
+	"server/api/profiles"
 	handlers "server/api/users/handlers"
 	"server/api/users/repository"
 	"server/container"
@@ -13,14 +14,14 @@ type UserModule struct {
 }
 
 func NewUserModule(container *container.Container,
-	router *router.Router) *UserModule {
+	router *router.Router, profilesModule *profiles.ProfilesModule) *UserModule {
 
-	userRepository := repository.NewUserMongoRepository(container)
+	userRepository := repository.NewUserRepository(container)
 
 	routes := []interfaces.Route{}
 	routes = append(routes,
 		router.BuildRoute("GET", "", handlers.Users(container, userRepository)),
-		router.BuildRoute("POST", "/register", handlers.Register(container, userRepository)))
+		router.BuildRoute("POST", "/register", handlers.Register(container, userRepository, profilesModule)))
 
 	userModule := &UserModule{
 		UserRepository: userRepository,

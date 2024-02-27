@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"server/api/users"
@@ -37,7 +36,7 @@ func Login(userModule *users.UserModule) echo.HandlerFunc {
 		fmt.Println("Login")
 		userRepository := userModule.UserRepository
 
-		userFound, err := userRepository.GetUser(context.TODO(), user.Email, user.Password)
+		userFound, err := userRepository.GetUser(user.Email, user.Password)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Invalid email or password"})

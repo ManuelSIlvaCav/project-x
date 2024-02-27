@@ -7,7 +7,6 @@ import (
 	"server/container"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,8 +15,6 @@ type (
 		UserId string `json:"user_id" form:"user_id" validate:"required"`
 	}
 )
-
-var validate = validator.New()
 
 func UploadCV(container *container.Container, fileModule *files_module.FilesModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -29,11 +26,13 @@ func UploadCV(container *container.Container, fileModule *files_module.FilesModu
 
 		var cvData CVData
 
-		logger.Info("Starting", "cv", "Data")
+		logger.Info("Started UploadCV")
 
 		if err := c.Bind(&cvData); err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
+
+		validate := container.GetValidator()
 
 		//use the validator library to validate required fields
 		if validationErr := validate.Struct(&cvData); validationErr != nil {

@@ -22,9 +22,16 @@ func NewProfilesModule(container *container.Container, router *router.Router, fi
 
 	routes := []interfaces.Route{}
 	routes = append(routes,
-		router.BuildRoute("POST", "/upload-cv", profiles_handlers.UploadCV(container, filesModule)))
+		router.BuildRoute("POST", "/upload-cv", profiles_handlers.UploadCV(container, filesModule)),
+		router.BuildRoute("PUT", "/:user_id/work-experience", profiles_handlers.UpdateWorkExperience(container, userProfilesRepository)),
+	)
 
 	router.SetRoutes("/profiles", routes)
 
 	return profilesModule
+}
+
+// Get user profiles repository
+func (module *ProfilesModule) GetUserProfilesRepository() profiles_repository.UserProfilesRepository {
+	return module.userProfilesRepository
 }
