@@ -4,14 +4,14 @@ go 1.21.4
 
 require (
 	github.com/aws/aws-sdk-go v1.50.25
+	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/lib/pq v1.10.9
-	go.mongodb.org/mongo-driver v1.13.1
+	go.mongodb.org/mongo-driver v1.14.0
 	go.uber.org/fx v1.20.1
 )
 
 require (
-	github.com/golang-migrate/migrate/v4 v4.17.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect

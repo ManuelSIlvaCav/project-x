@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"server/container/utils/config"
 	"server/container/utils/logger"
@@ -26,7 +27,7 @@ func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
 	logger.Info(fmt.Sprintf("Connecting to %s\n", config.MongoDB.MongoUri))
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(config.MongoDB.MongoUri).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(config.MongoDB.MongoUri).SetServerAPIOptions(serverAPI).SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, opts)
 
