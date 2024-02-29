@@ -26,16 +26,16 @@ Important to setup env variables
 
 https://medium.com/pengenpaham/postgres-database-migration-using-golang-migrate-docker-compose-and-makefile-159ef50670cf
 
+## If testing with app runner connecting to MongoDB
+
+https://www.linkedin.com/pulse/cr%2525C3%2525A9er-une-connexion-s%2525C3%2525A9curis%2525C3%2525A9-entre-app-runner-et-mongo-jordan-kagmeni-dolxe/?trackingId=tgyBxZdgStiv3QWXFzsADg%3D%3D
+
 ## TODO
 
-1. Build mongo cluster and connect it to
+1. Make mongo compatible with app runner
 
-- App Runer
-- Terraform ECS
-
-2. Make a github actions pipeline that works with terraform architecture
-
-- Check out if on new image the ecs clusters update
+2. Test out the terraform architecture
+   2.a Make a github actions pipeline that works with terraform architecture
 
 # Features
 

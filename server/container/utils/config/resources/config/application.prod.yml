@@ -1,3 +1,11 @@
+postgres:
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  dbname: ${POSTGRES_DB}
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  migration: true
+
 mongodb:
   mongo_uri: ${MONGO_URI}
   database_name: ${MONGO_DB}

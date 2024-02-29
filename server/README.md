@@ -15,3 +15,7 @@
 > docker build -f Dockerfile -t server-go .
 
 > docker run -dp 127.0.0.1:3000:3000 server-go -d
+
+## Running without container
+
+sh start.sh

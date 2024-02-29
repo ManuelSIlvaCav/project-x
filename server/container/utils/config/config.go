@@ -20,6 +20,13 @@ type Config struct {
 		MongoUri     string `yaml:"mongo_uri" default:"mongodb://localhost:27017"`
 		MainDatabase string `yaml:"database_name" default:"project-x"`
 	}
+	Postgres struct {
+		Host     string `yaml:"host" default:"localhost"`
+		Port     string `yaml:"port" default:"5432"`
+		User     string `yaml:"user" default:"postgres"`
+		Password string `yaml:"password" default:"password"`
+		Database string `yaml:"dbname" default:"project-x"`
+	}
 	Port string `yaml:"port" default:"3000"`
 	Env  string
 	AWS  struct {

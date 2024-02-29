@@ -25,8 +25,10 @@ func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
 
 	logger.Info(fmt.Sprintf("Connecting to %s\n", config.MongoDB.MongoUri))
 
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(config.MongoDB.MongoUri).SetServerAPIOptions(serverAPI)
 	// Connect to MongoDB
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.MongoDB.MongoUri))
+	client, err := mongo.Connect(ctx, opts)
 
 	if err != nil {
 		return nil, err
