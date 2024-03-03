@@ -17,7 +17,7 @@ type AuthModule struct {
 
 func NewAuthModule(container *container.Container, router *router.Router, userModule *users.UserModule) *AuthModule {
 	authModule := &AuthModule{
-		loginHandler: handlers.Login(userModule),
+		loginHandler: handlers.Login(container, userModule),
 	}
 	authModule.SetRoutes(router)
 	return authModule

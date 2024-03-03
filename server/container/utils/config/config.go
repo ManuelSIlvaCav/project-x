@@ -77,3 +77,9 @@ func loadAppConfig(yamlFile embed.FS) *Config {
 	fmt.Printf("Loaded application %+v\n", config)
 	return config
 }
+
+//Build a method for struct to know if we are on production
+
+func (c *Config) IsProd() bool {
+	return c.Env == PROD
+}

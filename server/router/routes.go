@@ -7,9 +7,11 @@ import (
 	"server/container/utils/config"
 	"server/controller"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"server/api/auth/jwt"
 	interfaces "server/api/interfaces"
 )
 
@@ -48,8 +50,10 @@ func setCORSConfig(e *echo.Echo, container *container.Container) {
 }
 
 func setJWTConfig(e *echo.Echo, container *container.Container) {
+	//Let's get the JWT secret from the config
+	config := jwt.GetJWTConfig()
+	e.Use(echojwt.WithConfig(config))
 
-	//e.Use(echojwt.WithConfig(jwtConfig))
 }
 
 func setErrorController(e *echo.Echo, container *container.Container) {
@@ -88,6 +92,7 @@ func (r *Router) initializeRouter(e *echo.Echo, container *container.Container) 
 	setCORSConfig(e, container)
 	setErrorController(e, container)
 	setHealthController(e, container)
+	//setJWTConfig(e, container)
 	//Set the main group
 
 	r.mainGroup = e.Group("/api/v1")

@@ -16,7 +16,6 @@ import (
 
 func Register(container *container.Container, userRepository repository.UserRepository, profilesModule *profiles.ProfilesModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		logger := container.GetLogger()
 		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 		var user user_models.User
@@ -40,31 +39,44 @@ func Register(container *container.Container, userRepository repository.UserRepo
 			CreatedAt: time.Now(),
 		}
 
-		result, err := userRepository.CreateUser(newUser)
+		userId, err := userRepository.CreateUser(newUser)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": err.Error()})
 		}
 
-		logger.Info("Getting user Info", "id", result)
+		createUserProfileErr := createUserProfile(container, profilesModule, userRepository, userId)
 
-		getUser, err := userRepository.GetUserByID(result)
-
-		logger.Info("UserInfo", "user", getUser)
-
-		userId, err := primitive.ObjectIDFromHex(getUser.ID)
-		newProfile := profiles_models.UserProfile{UserID: userId, WorkExperiences: []*profiles_models.WorkExperience{}}
-
-		logger.Info("Creating profile", "profile", newProfile)
-
-		profileId, err := profilesModule.GetUserProfilesRepository().CreateUserProfile(newProfile)
-
-		logger.Info("Profile created successfully", "profileId", profileId)
-
-		if err != nil {
+		if createUserProfileErr != nil {
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": err.Error()})
 		}
 
-		return c.JSON(http.StatusCreated, &echo.Map{"message": "success", "data": &echo.Map{"id": result}})
+		return c.JSON(http.StatusCreated, &echo.Map{"message": "success", "data": &echo.Map{"id": userId}})
 	}
+}
+
+func createUserProfile(container *container.Container, profilesModule *profiles.ProfilesModule, userRepository repository.UserRepository, userId string) error {
+
+	logger := container.GetLogger()
+	logger.Info("Getting user Info", "id", userId)
+
+	objectId, err := primitive.ObjectIDFromHex(userId)
+
+	if err != nil {
+		return err
+	}
+
+	newProfile := profiles_models.UserProfile{UserID: &objectId, WorkExperiences: []*profiles_models.WorkExperience{}}
+
+	logger.Info("Creating profile", "profile", newProfile)
+
+	profileId, GetProfileErr := profilesModule.GetUserProfilesRepository().CreateUserProfile(newProfile)
+
+	if GetProfileErr != nil {
+		return GetProfileErr
+	}
+
+	logger.Info("Profile created successfully", "profileId", profileId)
+
+	return nil
 }

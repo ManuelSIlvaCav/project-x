@@ -2,6 +2,9 @@
 import { register } from "@/app/lib/actions/register";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/Fields";
+import GithubLoginButton from "@/components/Login/GithubLoginButton";
+import GoogleLoginButton from "@/components/Login/GoogleLoginButton";
+import LinkedInLoginButton from "@/components/Login/LinkedInLoginButton";
 import { useFormState } from "react-dom";
 
 export default function RegisterComponent() {
@@ -44,6 +47,12 @@ export default function RegisterComponent() {
       <Button type="submit" variant="solid" className="mt-8 w-full">
         Register
       </Button>
+      <div className="flex flex-col gap-4 p-10">
+        <div className="flex items-center">Soon!</div>
+        <GoogleLoginButton />
+        <LinkedInLoginButton />
+        <GithubLoginButton />
+      </div>
     </form>
   );
 }

@@ -1,9 +1,9 @@
-import WorkExperienceForm from "./WorkExperienceForm";
+import WorkExperience from "./WorkExperience";
 
-export default function CandidateProfile() {
+export default async function CandidateProfile() {
   return (
     <>
-      <WorkExperienceForm />
+      <WorkExperience />
     </>
   );
 }

@@ -22,7 +22,7 @@ type (
 	}
 
 	WorkExperienceRoleOverviewInput struct {
-		RoleDescription string `json:"role_description" validate:"required"`
+		Descriptions []string `json:"descriptions" validate:"required"`
 	}
 
 	WorkExperienceCompanyOverviewInput struct {
@@ -31,7 +31,9 @@ type (
 	}
 
 	WorkExperienceInput struct {
-		UserId          string                              `param:"user_id" validate:"required"`
+		UserId string `param:"user_id" validate:"required"`
+		//ID allows to update a specific work experience for that user
+		ID              string                              `json:"id,omitempty"`
 		WorkExperience  *WorkExperienceOverviewInput        `json:"work_experience_overview,omitempty"`
 		RoleOverview    *WorkExperienceRoleOverviewInput    `json:"role_overview,omitempty"`
 		CompanyOverview *WorkExperienceCompanyOverviewInput `json:"company_overview,omitempty"`
@@ -49,13 +51,10 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 
 		var workExperienceData WorkExperienceInput
 
-		logger.Info("Starting update work experience")
-
 		if err := c.Bind(&workExperienceData); err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		logger.Info("Validating work experience", "data", workExperienceData)
 		validate := container.GetValidator()
 
 		//use the validator library to validate required fields
@@ -63,25 +62,34 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
 		}
 
-		//Now we save it into the repository
-		newWorkExperience := profiles_models.WorkExperience{
-			Company:        workExperienceData.WorkExperience.Company,
-			Role:           workExperienceData.WorkExperience.Role,
-			StartDateMonth: workExperienceData.WorkExperience.StartDateMonth,
-			StartDateYear:  workExperienceData.WorkExperience.StartDateYear,
-			EndDateYear:    workExperienceData.WorkExperience.EndDateYear,
-			EndDateMonth:   workExperienceData.WorkExperience.EndDateMonth,
+		logger.Info("Updating work experience", "data", workExperienceData)
+
+		newWorkExperience := profiles_models.WorkExperience{}
+
+		if workExperienceData.WorkExperience != nil {
+			newWorkExperience.Company = workExperienceData.WorkExperience.Company
+			newWorkExperience.Role = workExperienceData.WorkExperience.Role
+			newWorkExperience.StartDateMonth = workExperienceData.WorkExperience.StartDateMonth
+			newWorkExperience.StartDateYear = workExperienceData.WorkExperience.StartDateYear
+			newWorkExperience.EndDateYear = workExperienceData.WorkExperience.EndDateYear
+			newWorkExperience.EndDateMonth = workExperienceData.WorkExperience.EndDateMonth
 		}
 
-		logger.Info("Saving work experience", "data", workExperienceData)
+		if workExperienceData.RoleOverview != nil && len(workExperienceData.RoleOverview.Descriptions) > 0 {
+			for _, description := range workExperienceData.RoleOverview.Descriptions {
+				newWorkExperience.Descriptions = append(newWorkExperience.Descriptions, &profiles_models.Description{Value: description})
+			}
+		}
 
-		result, err := userProfileRepository.UpdateUserProfileWorkExperience(workExperienceData.UserId, newWorkExperience)
+		logger.Info("Saving work experience", "data", newWorkExperience)
+
+		result, err := userProfileRepository.UpdateUserProfileWorkExperience(workExperienceData.UserId, workExperienceData.ID, newWorkExperience)
 
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 		logger.Info("Work experience saved", "result", result)
 
-		return c.JSON(http.StatusOK, &echo.Map{"message": "success", "data": &echo.Map{"id": result}})
+		return c.JSON(http.StatusOK, &echo.Map{"message": "success", "data": result})
 	}
 }

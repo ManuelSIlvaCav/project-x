@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"server/api/users"
+	"server/container"
 
 	jwtUtils "server/api/auth/jwt"
 
@@ -20,8 +20,10 @@ type (
 
 var validate = validator.New()
 
-func Login(userModule *users.UserModule) echo.HandlerFunc {
+func Login(container *container.Container, userModule *users.UserModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
+
+		logger := container.GetLogger()
 
 		var user UserLogin
 
@@ -33,19 +35,19 @@ func Login(userModule *users.UserModule) echo.HandlerFunc {
 		if validationErr := validate.Struct(&user); validationErr != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
 		}
-		fmt.Println("Login")
+
 		userRepository := userModule.UserRepository
 
-		userFound, err := userRepository.GetUser(user.Email, user.Password)
+		userFound, err := userRepository.LoginUser(user.Email, user.Password)
 
-		if err != nil {
+		logger.Info("User data ", "user", userFound)
+
+		if err != nil || userFound == nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Invalid email or password"})
 		}
 
-		fmt.Println("User", userFound)
-
 		// Create token
-		token, err := jwtUtils.GetJWTToken(userFound.FirstName, userFound.LastName)
+		token, err := jwtUtils.CreateJwtToken(userFound.FirstName, userFound.LastName)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, echo.Map{
@@ -54,7 +56,8 @@ func Login(userModule *users.UserModule) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, echo.Map{
-			"token": token,
+			"token":  token,
+			"userId": userFound.ID,
 		})
 	}
 }

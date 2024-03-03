@@ -4,15 +4,20 @@ import (
 	"context"
 	user_models "server/api/users/models"
 	"server/container"
+	"server/helpers/passwords"
 
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserRepository interface {
 	CreateUser(user user_models.User) (string, error)
-	GetUser(username string, password string) (*user_models.User, error)
+	GetUser(username string) (*user_models.User, error)
 	GetUserByID(id string) (*user_models.User, error)
+
+	//Candidates for a service module
+	LoginUser(email string, password string) (*user_models.User, error)
 }
 
 type userRepository struct {
@@ -27,6 +32,13 @@ func (repo *userRepository) CreateUser(user user_models.User) (string, error) {
 	ctx := context.Background()
 	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 
+	hashedPassword, err := passwords.Hash(user.Password)
+	if err != nil {
+		return "", err
+
+	}
+	user.Password = hashedPassword
+
 	result, err := userCollection.InsertOne(ctx, user)
 
 	if err != nil {
@@ -37,22 +49,38 @@ func (repo *userRepository) CreateUser(user user_models.User) (string, error) {
 
 }
 
-func (repo *userRepository) GetUser(email string, password string) (*user_models.User, error) {
+func (repo *userRepository) GetUser(email string) (*user_models.User, error) {
 	ctx := context.Background()
 	//We hash the password first to test
 	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
-	filter := bson.D{{Key: "email", Value: email}, {Key: "password", Value: password}}
+
+	filter := bson.D{{Key: "email", Value: email}, {Key: "deleted_at", Value: nil}}
 
 	user := userCollection.FindOne(ctx, filter)
 
 	var userFound user_models.User
-	err := user.Decode(&userFound)
+
+	if decodeError := user.Decode(&userFound); decodeError != nil {
+		return nil, decodeError
+	}
+	//If we don't find it, we return an error
+	return &userFound, nil
+}
+
+// LoginUser logs in a user and validates the password
+func (repo *userRepository) LoginUser(email string, password string) (*user_models.User, error) {
+	user, err := repo.GetUser(email)
 
 	if err != nil {
 		return nil, err
 	}
-	//If we don't find it, we return an error
-	return &userFound, nil
+
+	//Now we validate the password for that user of the email
+	if !passwords.Verify(user.Password, password) {
+		//Create custom error and return
+		return nil, errors.New("Invalid password")
+	}
+	return user, nil
 }
 
 // Get user by id

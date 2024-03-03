@@ -4,22 +4,22 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type (
 	UserProfile struct {
-		ID     string             `json:"id" bson:"_id,omitempty"`
-		UserID primitive.ObjectID `bson:"userId" json:"userId"`
+		ID     string              `json:"id" bson:"_id,omitempty"`
+		UserID *primitive.ObjectID `bson:"userId" json:"userId"`
 
-		UploadCVFileID primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
+		UploadCVFileID *primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
 
 		//Contact information
-		ContactInformation ContactInformation `json:"contactInformation,omitempty" bson:"contactInformation,omitempty"`
+		ContactInformation *ContactInformation `json:"contactInformation,omitempty" bson:"contactInformation,omitempty"`
 
 		//Work experience
-		WorkExperiences []*WorkExperience `json:"workExperiences,omitempty" bson:"workExperiences,omitempty"`
+		WorkExperiences []*WorkExperience `json:"workExperiences,omitempty" bson:"workExperiences"`
 
 		//Education
-		Education []Education `json:"education,omitempty" bson:"education,omitempty"`
+		Education []*Education `json:"education,omitempty" bson:"education,omitempty"`
 
 		//Links
-		Links Links `json:"links,omitempty" bson:"links,omitempty"`
+		Links *Links `json:"links,omitempty" bson:"links,omitempty"`
 	}
 
 	ContactInformation struct {
@@ -37,9 +37,14 @@ type (
 		StartDateYear      string             `json:"startDateYear" bson:"startDateYear"`
 		EndDateYear        string             `json:"endDateYear" bson:"endDateYear"`
 		EndDateMonth       string             `json:"endDateMonth" bson:"endDateMonth"`
-		RoleDescription    string             `json:"roleDescription,omitempty" bson:"roleDescription,omitempty"`
 		CompanyDescription string             `json:"companyDescription,omitempty" bson:"companyDescription,omitempty"`
 		CompanyWebsite     string             `json:"companyWebsite,omitempty" bson:"companyWebsite,omitempty"`
+		Descriptions       []*Description     `json:"descriptions,omitempty" bson:"descriptions,omitempty"`
+	}
+
+	Description struct {
+		ID    *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+		Value string              `json:"value" bson:"value"`
 	}
 
 	Education struct {

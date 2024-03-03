@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -118,7 +118,7 @@ export function Header() {
                             <Button href="/login" variant="outline">
                               Log in
                             </Button>
-                            <Button href="#">Download the app</Button>
+                            <Button href="/register">Sign up</Button>
                           </div>
                         </Popover.Panel>
                       </>
@@ -130,8 +130,8 @@ export function Header() {
             <Button href="/login" variant="outline" className="hidden lg:block">
               Log in
             </Button>
-            <Button href="#" className="hidden lg:block">
-              Download
+            <Button href="/register" className="hidden lg:block">
+              Sign up
             </Button>
           </div>
         </Container>

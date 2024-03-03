@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	"net/http"
+	"server/container"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -24,6 +25,15 @@ func GetJWTConfig() echojwt.Config {
 			return new(JwtCustomClaims)
 		},
 		SigningKey: []byte("secret"), //TODO Get secret from config
+		Skipper: func(c echo.Context) bool {
+			// Skip authentication for health check and login
+			if c.Path() == "/health" ||
+				c.Path() == "/api/v1/auth/login" ||
+				c.Path() == "/api/v1/users/register" {
+				return true
+			}
+			return false
+		},
 	}
 	return config
 }
@@ -35,7 +45,7 @@ func AuthMiddleware(c echo.Context) error {
 	return c.String(http.StatusOK, "Welcome "+name+"!")
 }
 
-func GetJWTToken(firstName string, lastName string) (t string, err error) {
+func CreateJwtToken(firstName string, lastName string) (t string, err error) {
 	// Set custom claims
 	claims := &JwtCustomClaims{
 		fmt.Sprintf("%s %s", firstName, lastName),
@@ -51,4 +61,23 @@ func GetJWTToken(firstName string, lastName string) (t string, err error) {
 	// Generate encoded token and send it as response.
 	return token.SignedString([]byte("secret"))
 
+}
+
+func verifyToken(container container.Container, tokenString string) error {
+	//config := container.GetConfig()
+	secretKey := "secret" // Implement from config
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+
+	return nil
 }
