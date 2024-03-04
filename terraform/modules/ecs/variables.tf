@@ -46,7 +46,7 @@ variable "ecr_container_hash" {
 
 variable "logs_region" {
   type    = string
-  default = "eu-west-2"
+  default = "eu-west-1"
 }
 
 variable "tag" {

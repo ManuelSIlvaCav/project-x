@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  AWS_REGION: eu-west-2
+  AWS_REGION: eu-west-1
   ECR_REPOSITORY: project_x_demo
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

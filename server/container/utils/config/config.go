@@ -30,7 +30,7 @@ type Config struct {
 	Port string `yaml:"port" default:"3000"`
 	Env  string
 	AWS  struct {
-		Region      string `yaml:"region" default:"eu-west-2"`
+		Region      string `yaml:"region" default:"eu-west-1"`
 		AccessKeyId string `yaml:"access_key"`
 		SecretKeyId string `yaml:"secret_key"`
 	}
