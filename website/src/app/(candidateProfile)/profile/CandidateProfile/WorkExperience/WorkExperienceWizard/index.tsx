@@ -35,7 +35,7 @@ export default function WorkExperienceWizard({ open }: { open: boolean }) {
     <WorkExperienceWizardContext.Provider
       value={{ workExperienceId: workExperienceId }}
     >
-      <Card className={`${open ? "" : "hidden"}`}>
+      <Card className={`${open ? "p-4" : "hidden"}`}>
         {componentMap[step]() as JSX.Element}
       </Card>
     </WorkExperienceWizardContext.Provider>
