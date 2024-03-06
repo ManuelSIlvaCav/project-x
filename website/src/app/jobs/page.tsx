@@ -1,0 +1,14 @@
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Company Jobs",
+};
+
+export default function JobsPage() {
+  console.log({ JobsPage: true });
+  return (
+    <div>
+      <h1>Jobs</h1>
+    </div>
+  );
+}

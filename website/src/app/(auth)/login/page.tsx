@@ -7,7 +7,11 @@ export const metadata: Metadata = {
   title: "Sign In",
 };
 
-export default function Login() {
+type Props = {
+  searchParams?: Record<"callbackUrl" | "error", string>;
+};
+
+export default function Login(props: Props) {
   return (
     <AuthLayout
       title="Sign in to account"
@@ -21,7 +25,10 @@ export default function Login() {
         </>
       }
     >
-      <LoginComponent />
+      <LoginComponent
+        error={props.searchParams?.error}
+        callbackUrl={props.searchParams?.callbackUrl}
+      />
     </AuthLayout>
   );
 }

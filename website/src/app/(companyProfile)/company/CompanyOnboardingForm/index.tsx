@@ -1,6 +1,6 @@
 import Card from "@/components/Card";
 import TextArea from "@/components/TextArea";
-import WorkExperienceForm from "../../../(candidateProfile)/dashboard/CandidateProfile/WorkExperience";
+import WorkExperienceForm from "../../../(candidateProfile)/profile/CandidateProfile/WorkExperience";
 
 export default function CompanyOnboardingForm() {
   return (

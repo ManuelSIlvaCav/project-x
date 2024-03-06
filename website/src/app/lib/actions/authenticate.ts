@@ -3,6 +3,22 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+export interface JwtCookie {
+  name: string;
+  value: string;
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: string;
+  maxAge: number;
+  path: string;
+}
+
+interface AuthenticateResponse {
+  token: string;
+  expiresIn: number;
+  userId: string;
+}
+
 export async function authenticate(prevState: any, formData: FormData) {
   const url = `${process.env.API_PATH}/auth/login`;
   try {
@@ -17,14 +33,15 @@ export async function authenticate(prevState: any, formData: FormData) {
       }),
     });
 
-    const data = await response?.json();
+    const data: AuthenticateResponse = await response?.json();
 
     if (!response?.ok) {
       console.log("something wrong");
-      return { message: data?.message ?? "Something went wrong" };
+      return { message: "Something went wrong" };
     }
 
     console.log("response", data);
+
     if (!data?.token) {
       return { message: "Error: Something went wrong. Please try again." };
     }
@@ -35,7 +52,7 @@ export async function authenticate(prevState: any, formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      maxAge: data?.expiresIn, //60 * 60 * 24 * 7 - 1 week
       path: "/",
     });
     cookies().set("userId", data?.userId);
@@ -44,5 +61,5 @@ export async function authenticate(prevState: any, formData: FormData) {
     return { message: "Error: Something went wrong. Please try again." };
   }
 
-  redirect("/dashboard/");
+  redirect("/profile/");
 }

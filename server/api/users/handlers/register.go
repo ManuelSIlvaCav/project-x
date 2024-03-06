@@ -16,6 +16,7 @@ import (
 
 func Register(container *container.Container, userRepository repository.UserRepository, profilesModule *profiles.ProfilesModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		logger := container.GetLogger()
 		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 		var user user_models.User
@@ -38,12 +39,15 @@ func Register(container *container.Container, userRepository repository.UserRepo
 			Password:  user.Password,
 			CreatedAt: time.Now(),
 		}
+		logger.Info("Creating user", "user", newUser)
 
 		userId, err := userRepository.CreateUser(newUser)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": err.Error()})
 		}
+
+		logger.Info("User created ", "userId", userId)
 
 		createUserProfileErr := createUserProfile(container, profilesModule, userRepository, userId)
 
@@ -58,7 +62,6 @@ func Register(container *container.Container, userRepository repository.UserRepo
 func createUserProfile(container *container.Container, profilesModule *profiles.ProfilesModule, userRepository repository.UserRepository, userId string) error {
 
 	logger := container.GetLogger()
-	logger.Info("Getting user Info", "id", userId)
 
 	objectId, err := primitive.ObjectIDFromHex(userId)
 

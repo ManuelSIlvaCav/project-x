@@ -8,6 +8,7 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { Logo } from "@/components/Logo";
 import { NavLinks } from "@/components/NavLinks";
+import { signIn } from "next-auth/react";
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
@@ -115,7 +116,15 @@ export function Header() {
                             <MobileNavLink href="/#faqs">FAQs</MobileNavLink>
                           </div>
                           <div className="mt-8 flex flex-col gap-4">
-                            <Button href="/login" variant="outline">
+                            {/* <Button href="/login" variant="outline">
+                              Log in
+                            </Button> */}
+                            <Button
+                              onClick={() => {
+                                signIn();
+                              }}
+                              variant="outline"
+                            >
                               Log in
                             </Button>
                             <Button href="/register">Sign up</Button>
@@ -127,8 +136,17 @@ export function Header() {
                 </>
               )}
             </Popover>
-            <Button href="/login" variant="outline" className="hidden lg:block">
+            {/* <Button href="/login" variant="outline" className="hidden lg:block">
               Log in
+            </Button> */}
+            <Button
+              onClick={() => {
+                signIn();
+              }}
+              variant="outline"
+              className="hidden lg:block"
+            >
+              Log in 2
             </Button>
             <Button href="/register" className="hidden lg:block">
               Sign up

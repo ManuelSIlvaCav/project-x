@@ -51,7 +51,7 @@ func CreateJwtToken(firstName string, lastName string) (t string, err error) {
 		fmt.Sprintf("%s %s", firstName, lastName),
 		true,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 5)),
 		},
 	}
 

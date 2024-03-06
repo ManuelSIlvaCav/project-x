@@ -9,7 +9,7 @@ import { useFormState } from "react-dom";
 
 export default function RegisterComponent() {
   const [state, dispatch] = useFormState(register, null);
-  console.log("state", state);
+
   return (
     <form action={dispatch}>
       <div className="grid grid-cols-2 gap-6">

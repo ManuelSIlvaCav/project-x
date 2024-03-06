@@ -1,17 +1,30 @@
 "use client";
 
-import { authenticate } from "@/app/lib/actions/authenticate";
 import { Button } from "@/components/Button";
 import FieldErrorMessage from "@/components/FieldErrorMessage";
 import { TextField } from "@/components/Fields";
-import { useFormState } from "react-dom";
+import { signIn } from "next-auth/react";
 
-export default function LoginComponent() {
-  const [state, dispatch] = useFormState(authenticate, null);
-  console.log("state", state);
-  const hasError = state?.message;
+type Props = {
+  callbackUrl?: string;
+  error?: string;
+};
+
+export default function LoginComponent(props: Props) {
+  const { callbackUrl, error } = props;
+  const hasError = false;
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await signIn("credentials", {
+      email: e.currentTarget.email.value,
+      password: e.currentTarget.password.value,
+      redirect: true,
+      callbackUrl: callbackUrl ?? "/profile",
+    });
+  }
   return (
-    <form action={dispatch}>
+    <form onSubmit={onSubmit}>
       <div className="space-y-6">
         <TextField
           label="Email address"
@@ -31,7 +44,7 @@ export default function LoginComponent() {
         />
       </div>
 
-      {hasError ? <FieldErrorMessage>{state.message}</FieldErrorMessage> : null}
+      {error ? <FieldErrorMessage>{error}</FieldErrorMessage> : null}
 
       <Button type="submit" variant="solid" className="mt-8 w-full">
         Sign in to account
