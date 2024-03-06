@@ -1,3 +1,4 @@
+"use client";
 import { useId } from "react";
 
 import { Container } from "@/components/Container";

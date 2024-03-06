@@ -45,7 +45,7 @@ const handler = NextAuth({
 
           return null;
         } catch (error) {
-          console.error({ error });
+          console.error("Error on authorize", { error });
           return null;
         }
       },
