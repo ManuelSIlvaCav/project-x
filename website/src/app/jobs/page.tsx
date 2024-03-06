@@ -5,7 +5,6 @@ export const metadata: Metadata = {
 };
 
 export default function JobsPage() {
-  console.log({ JobsPage: true });
   return (
     <div>
       <h1>Jobs</h1>

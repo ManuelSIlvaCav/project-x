@@ -14,8 +14,6 @@ export default function UploadFile({
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string | null;
 }) {
-  console.log({ title, fieldName, className, props, x: 1 });
-
   //const [file, setFile] = useState<File | undefined>(undefined);
 
   async function handleFileChange(e: any) {
