@@ -1,6 +1,6 @@
 "use server";
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import authOptions from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { revalidateTag } from "next/cache";
 

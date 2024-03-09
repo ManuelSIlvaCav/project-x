@@ -8,6 +8,7 @@ const jobInviteList = [
     imageUrl: "https://picsum.photos/200",
     description:
       "We are looking for a Senior Software Engineer to join our team.",
+    href: "/details",
   },
   {
     id: "2",
@@ -15,6 +16,7 @@ const jobInviteList = [
     subtitle: "Facebook",
     imageUrl: "https://picsum.photos/200",
     description: "We are looking for a Product Designer to join our team.",
+    href: "/details",
   },
   {
     id: "3",
@@ -22,6 +24,7 @@ const jobInviteList = [
     subtitle: "Amazon",
     imageUrl: "https://picsum.photos/200",
     description: "We are looking for a Data Scientist to join our team.",
+    href: "/details",
   },
   {
     id: "4",
@@ -30,6 +33,7 @@ const jobInviteList = [
     imageUrl: "https://picsum.photos/200",
     description:
       "We are looking for a Senior Software Engineer to join our team.",
+    href: "/details",
   },
   {
     id: "5",
@@ -37,6 +41,7 @@ const jobInviteList = [
     subtitle: "Facebook",
     imageUrl: "https://picsum.photos/200",
     description: "We are looking for a Product Designer to join our team.",
+    href: "/details",
   },
   {
     id: "6",
@@ -44,6 +49,7 @@ const jobInviteList = [
     subtitle: "Amazon",
     imageUrl: "https://picsum.photos/200",
     description: "We are looking for a Data Scientist to join our team.",
+    href: "/details",
   },
 ];
 
@@ -51,7 +57,7 @@ export default function JobsList() {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Your Job postings</h1>
-      <StackedList options={jobInviteList} href="/jobs/" isCompany={true} />
+      <StackedList options={jobInviteList} href="/jobs/" />
     </div>
   );
 }

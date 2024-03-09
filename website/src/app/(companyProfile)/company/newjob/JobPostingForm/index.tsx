@@ -26,7 +26,7 @@ const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   //toast.success("Job posting saved"); // Displays a success message
   toast.custom((t) => {
-    return <NotificationToast t={t} />;
+    return <NotificationToast t={t} title="Job posting created" />;
   });
 };
 
