@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/Button";
 import Checkboxes from "@/components/Checkboxes";
-import CustomSelectCheck from "@/components/CustomSelectCheck";
-import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import classNames from "classnames";
+import CustomSelect from "@/components/CustomSelect";
+import DescriptionInput from "@/components/DescriptionInput";
+import NotificationToast from "@/components/NotificationToast";
+import SectionHeader from "@/components/SectionHeader";
 import toast from "react-hot-toast";
 
 const roles = [
@@ -25,65 +26,43 @@ const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   //toast.success("Job posting saved"); // Displays a success message
   toast.custom((t) => {
-    return (
-      <div
-        className={classNames(
-          `${t.visible ? "animate-enter" : "animate-leave"}`,
-          "bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5  w-full max-w-sm overflow-hidden"
-        )}
-      >
-        <div className="p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <CheckCircleIcon
-                className="h-6 w-6 text-green-400"
-                aria-hidden="true"
-              />
-            </div>
-            <div className="ml-3 w-0 flex-1 pt-0.5">
-              <p className="text-sm font-medium text-gray-900">
-                Successfully saved!
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                Anyone with a link can now view this file.
-              </p>
-            </div>
-            <div className="ml-4 flex flex-shrink-0">
-              <button
-                type="button"
-                className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={() => toast.dismiss(t.id)}
-              >
-                <span className="sr-only">Close</span>
-                <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <NotificationToast t={t} />;
   });
 };
 
 export default function JobPostingForm() {
   return (
     <form onSubmit={onSubmit}>
+      <h1 className="flex align-center font-bold text-3xl pb-8">
+        Tell us more about your job posting!
+      </h1>
       <div className="flex flex-col gap-4">
-        <h1 className="flex align-center font-bold text-2xl ">
-          Tell us more about your job posting!
-        </h1>
-        <div className="">
-          <CustomSelectCheck label="Function" name="role" options={roles} />
+        <SectionHeader
+          title="First things first, tell us about the rol"
+          description="Please include role name, experience level and a role description"
+        />
+        <div>
+          <div className="">
+            <CustomSelect label="Function" name="role" options={roles} />
+          </div>
+          <div className="py-8">
+            <Checkboxes
+              label="Experience level"
+              name="experience_level"
+              options={[]}
+            />
+          </div>
+
+          <DescriptionInput label="Role description" name="role_description" />
         </div>
-        <div className="py-8">
-          <Checkboxes
-            label="Experience level"
-            name="experience_level"
-            options={[]}
-          />
-        </div>
+
+        <SectionHeader
+          title="Now tell us about the location of the role"
+          description="Please include if the job is remote/hybrid/in-office and the location of the office if required"
+        />
+
         <div className="">
-          <CustomSelectCheck
+          <CustomSelect
             label="Where is this job based?"
             name="role"
             options={locations}

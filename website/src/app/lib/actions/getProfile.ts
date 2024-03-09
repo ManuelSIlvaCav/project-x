@@ -1,8 +1,12 @@
-import { cookies } from "next/headers";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
 export default async function getProfile() {
-  const jwtToken = cookies().get("jwt_token")?.value ?? null;
-  const userId = cookies().get("userId")?.value ?? null;
+  const session = await getServerSession(authOptions);
+
+  const user = session?.user;
+  const userId = user?.userId;
+  const jwtToken = user?.accessToken;
 
   try {
     const url = `${process.env.API_PATH}/profiles/${userId}`;
@@ -10,6 +14,10 @@ export default async function getProfile() {
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
+      },
+      cache: "force-cache",
+      next: {
+        tags: ["profile"],
       },
     });
 

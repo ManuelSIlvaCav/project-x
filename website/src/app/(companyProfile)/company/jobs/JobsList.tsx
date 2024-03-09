@@ -51,7 +51,7 @@ export default function JobsList() {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Your Job postings</h1>
-      <StackedList options={jobInviteList} href="/jobs/" />
+      <StackedList options={jobInviteList} href="/jobs/" isCompany={true} />
     </div>
   );
 }

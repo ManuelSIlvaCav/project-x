@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { revalidateTag } from "next/cache";
 
 function buildBody(formData: FormData) {
   const id = formData.get("id") as string;
@@ -38,7 +39,6 @@ function buildBody(formData: FormData) {
   }
 
   if (descriptions && descriptions.length > 0) {
-    console.log("roleDescription in acion", descriptions);
     body["role_overview"] = {
       descriptions: descriptions,
     };
@@ -59,13 +59,14 @@ function buildBody(formData: FormData) {
 }
 
 export async function updateWorkExperience(prevState: any, formData: FormData) {
-  const jwtToken = cookies().get("jwt_token")?.value ?? null;
-  const userId = cookies().get("userId")?.value ?? null;
+  const session = await getServerSession(authOptions);
+
+  const user = session?.user;
+  const userId = user?.userId;
 
   const url = `${process.env.API_PATH}/profiles/${userId}/work-experience`;
   try {
     const body = buildBody(formData);
-    console.log("logging", { body, url });
 
     const response = await fetch(url, {
       method: "PUT",
@@ -82,8 +83,6 @@ export async function updateWorkExperience(prevState: any, formData: FormData) {
       return { message: data?.message ?? "Something went wrong" };
     }
 
-    console.log("response", { status: response.status, data });
-
     //Important we do not return for the last step of the wizard could change in the future
     if (!body.company_overview) {
       const workExperiencesArray = data?.data?.workExperiences;
@@ -95,6 +94,6 @@ export async function updateWorkExperience(prevState: any, formData: FormData) {
     return { message: "Error: Something went wrong. Please try again." };
   }
 
-  revalidatePath(`/dashboard/`);
-  return "success";
+  revalidateTag("profile");
+  return "Work Experience Updated!";
 }

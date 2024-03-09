@@ -5,10 +5,10 @@ import { TextField } from "@/components/Fields";
 import TextArea from "@/components/TextArea";
 import { FormEvent, useContext, useEffect } from "react";
 import { useFormState } from "react-dom";
-import { WorkExperienceWizardContext } from "./context";
+import { WorkExperienceWizardContext } from "../WorkExperienceSection/context";
 
 export default function CompanyOverview(props: {
-  handleNext: (workExperienceId?: string) => void;
+  handleNext: (workExperienceId?: string, successMessage?: string) => void;
 }) {
   const { handleNext } = props;
   const [state, dispatch] = useFormState(updateWorkExperience, null);
@@ -23,7 +23,7 @@ export default function CompanyOverview(props: {
 
   useEffect(() => {
     if (state) {
-      handleNext(state);
+      handleNext("", state);
     }
   }, [state, handleNext]);
 

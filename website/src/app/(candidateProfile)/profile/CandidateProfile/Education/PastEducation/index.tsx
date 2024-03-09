@@ -1,18 +1,8 @@
 import getProfile from "@/app/lib/actions/getProfile";
-import WorkExperiencesCard from "./WorkExperiencesCard";
+import { WorkExperience } from "../../WorkExperience/WorkExperiences";
+import WorkExperiencesCard from "../../WorkExperience/WorkExperiences/WorkExperiencesCard";
 
-export interface WorkExperience {
-  id: string;
-  role: string;
-  company: string;
-  startDateMonth: string;
-  startDateYear: string;
-  endDateYear: string;
-  endDateMonth: string;
-  descriptions: { value: string }[];
-}
-
-export default async function WorkExperiences() {
+export default async function PastEducation() {
   const profile = await getProfile();
   return (
     <>

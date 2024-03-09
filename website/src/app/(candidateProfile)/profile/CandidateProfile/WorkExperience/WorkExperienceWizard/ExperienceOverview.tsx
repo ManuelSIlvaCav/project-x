@@ -16,7 +16,6 @@ export default function WorkExperienceOverviewForm(props: {
 
   async function onFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("form submitted", { e });
     const formData = new FormData(e.currentTarget);
     dispatch(formData);
   }

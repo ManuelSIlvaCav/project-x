@@ -1,9 +1,10 @@
 import "@/styles/tailwind.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import MainInnerComponent from "./mainInnerComponent";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Space_Grotesk({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -14,16 +15,19 @@ export const metadata: Metadata = {
     "By leveraging insights from our network of industry insiders, you’ll know exactly when to buy to maximize profit, and exactly when to sell to avoid painful losses.",
 };
 
-type Props = {} & Readonly<{
+type Props = { params: Record<string, any> } & Readonly<{
   children: React.ReactNode;
 }>;
 
 export default function RootLayout(props: Props) {
+  const { children } = props;
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster position="top-center" />
-        {props.children}
+        <MainInnerComponent>
+          <Toaster />
+          {children}
+        </MainInnerComponent>
       </body>
     </html>
   );

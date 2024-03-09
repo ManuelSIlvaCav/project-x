@@ -22,8 +22,6 @@ export async function register(prevState: any, formData: FormData) {
     if (!response.ok) {
       return { message: data?.message ?? "Something went wrong" };
     }
-
-    console.log("response", response.statusText);
   } catch (error) {
     console.error("Error:", { error, url, prevState });
     return { message: "Error: Something went wrong. Please try again." };

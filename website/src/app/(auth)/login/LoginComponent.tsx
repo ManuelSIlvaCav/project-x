@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function LoginComponent(props: Props) {
-  const { callbackUrl, error } = props;
+  const { error } = props;
   const hasError = false;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -20,9 +20,10 @@ export default function LoginComponent(props: Props) {
       email: e.currentTarget.email.value,
       password: e.currentTarget.password.value,
       redirect: true,
-      callbackUrl: callbackUrl ?? "/profile",
+      callbackUrl: "/profile",
     });
   }
+
   return (
     <form onSubmit={onSubmit}>
       <div className="space-y-6">

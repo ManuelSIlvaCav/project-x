@@ -1,29 +1,27 @@
 "use client";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-export default function UploadFile({
-  title,
-  fieldName,
-  className,
-  file,
-  ...props
-}: React.ComponentPropsWithoutRef<"div"> & {
+export interface File {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+}
+
+type Props = React.ComponentPropsWithoutRef<"input"> & {
   title?: string;
   fieldName: string;
   file?: File | undefined;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string | null;
-}) {
-  //const [file, setFile] = useState<File | undefined>(undefined);
+};
 
-  async function handleFileChange(e: any) {
-    console.log("calling file change");
-    const file = e.target.files?.[0];
-    console.log("setting file");
-    //setFile(file);
-    props.onChange?.(e);
-  }
-
+export default function UploadFile({
+  title,
+  fieldName,
+  file,
+  className,
+  ...props
+}: Props) {
   return (
     <>
       <div className="col-span-full">
@@ -58,11 +56,6 @@ export default function UploadFile({
                       name={fieldName}
                       type="file"
                       className="sr-only"
-                      //onChange={handleFileChange}
-                      onChange={(e) => {
-                        console.log("calling file change");
-                        handleFileChange(e);
-                      }}
                       {...props}
                     />
                   </label>

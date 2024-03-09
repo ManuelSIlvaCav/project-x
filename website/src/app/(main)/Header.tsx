@@ -51,7 +51,7 @@ function MobileNavLink(
   );
 }
 
-export function Header() {
+export default function Header() {
   return (
     <header>
       <nav>
@@ -146,7 +146,7 @@ export function Header() {
               variant="outline"
               className="hidden lg:block"
             >
-              Log in 2
+              Log in
             </Button>
             <Button href="/register" className="hidden lg:block">
               Sign up

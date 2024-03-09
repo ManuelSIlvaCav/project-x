@@ -1,25 +1,14 @@
-"use client";
+import getProfile from "@/app/lib/actions/getProfile";
+import Skeleton from "@/components/Dashboard/Skeleton";
+import { Suspense } from "react";
+import UploadCVComponent from "./UploadCVComponent";
 
-import UploadFile from "@/components/UploadFile";
-import { useState } from "react";
+async function InnerUploadCV() {
+  const profile = await getProfile();
+  return <UploadCVComponent profile={profile} />;
+}
 
-export default function UploadCV() {
-  const [formData, setFormData] = useState({
-    email: "",
-    cv: undefined as File | undefined,
-  });
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = event.target;
-    if (files?.length) {
-      console.log("going in files", { name, value, files });
-      return setFormData((prevFormData) => ({
-        ...prevFormData,
-        cv: event.target.files?.[0],
-      }));
-    }
-  };
-
+export default async function UploadCV() {
   return (
     <div>
       <div className="pb-2">
@@ -30,11 +19,9 @@ export default function UploadCV() {
           Upload your CV to get started.
         </p>
       </div>
-      <UploadFile
-        fieldName="cv"
-        onChange={handleInputChange}
-        file={formData.cv}
-      />
+      <Suspense fallback={<Skeleton />}>
+        <InnerUploadCV />
+      </Suspense>
     </div>
   );
 }

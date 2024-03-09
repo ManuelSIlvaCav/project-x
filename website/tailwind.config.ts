@@ -27,8 +27,34 @@ const config: Config = {
           "logo-red": "#ea4335",
         },
       },
+      animation: {
+        enter: "fadeInBot 150ms ease-out",
+        leave: "fadeOutTop 150ms ease-in",
+      },
+      keyframes: {
+        fadeInBot: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(-3rem)",
+          },
+          "100%": {
+            opacity: "1",
+          },
+        },
+        fadeOutTop: {
+          "0%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+          "100%": {
+            opacity: "0",
+            transform: "translateY(-3rem)",
+          },
+        },
+      },
     },
   },
+
   plugins: [],
 };
 export default config;

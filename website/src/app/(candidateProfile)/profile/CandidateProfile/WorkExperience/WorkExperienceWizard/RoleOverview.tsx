@@ -3,7 +3,7 @@ import { Button } from "@/components/Button";
 import TextArea from "@/components/TextArea";
 import { FormEvent, useContext, useEffect } from "react";
 import { useFormState } from "react-dom";
-import { WorkExperienceWizardContext } from "./context";
+import { WorkExperienceWizardContext } from "../WorkExperienceSection/context";
 
 export default function RoleOverviewForm(props: { handleNext: () => void }) {
   const { handleNext } = props;
@@ -15,8 +15,6 @@ export default function RoleOverviewForm(props: { handleNext: () => void }) {
       handleNext();
     }
   }, [state, handleNext]);
-
-  console.log(workExperienceWizardData, "workExperienceWizardData");
 
   async function onFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,7 +40,6 @@ export default function RoleOverviewForm(props: { handleNext: () => void }) {
   let previousLength = 0;
 
   const handleInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    //console.log("handleing", e.currentTarget.value);
     const bullet = "\u2022";
     const newLength = e.currentTarget.value.length;
 

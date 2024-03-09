@@ -18,8 +18,6 @@ export function CustomModal({ children }: { children: React.ReactNode }) {
     router.back();
   }
 
-  console.log("opening modal");
-
   return createPortal(
     <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center z-1000">
       <dialog
