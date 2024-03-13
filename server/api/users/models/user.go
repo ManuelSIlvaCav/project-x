@@ -13,9 +13,9 @@ type (
 
 		Email string `json:"email" validate:"required,email" errormgs:"Email is required and must be a valid email address"`
 
-		Password  string    `json:"password"`
-		CreatedAt time.Time `json:"created_at"`
-		UpdatedAt time.Time `json:"updated_at"`
-		DeletedAt time.Time `json:"deleted_at"`
+		Password  string    `json:"password" validate:"required,min=6,max=20" errormgs:"Password is required and must be between 6 and 20 characters" bson:"password"`
+		CreatedAt time.Time `json:"createdAt" bson:"createdAt,omitempty"`
+		UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt,omitempty"`
+		DeletedAt time.Time `json:"deletedAt" bson:"deletedAt,omitempty"`
 	}
 )

@@ -13,7 +13,7 @@ export function AuthLayout({
 }) {
   return (
     <main className="flex min-h-full overflow-hidden pt-4 sm:py-7">
-      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
+      <div className="flex flex-col ali mx-auto  w-full max-w-2xl  px-4 sm:px-6">
         <Link href="/" aria-label="Home">
           <Logo className="mx-auto h-10 w-auto" />
         </Link>

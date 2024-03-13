@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "../(companyProfile)/company/Header";
+import { Header } from "../(company)/company/(internal)/Header";
 
 export const metadata: Metadata = {
   title: {
