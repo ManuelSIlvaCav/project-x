@@ -19,7 +19,7 @@ export async function register(prevState: any, formData: FormData) {
     const data = await response?.json();
 
     if (!response.ok) {
-      return { message: data?.message ?? "Something went wrong" };
+      return { error: data?.message ?? "Something went wrong" };
     }
   } catch (error) {
     console.error("Error:", { error, url, prevState });

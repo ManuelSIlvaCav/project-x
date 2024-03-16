@@ -20,16 +20,14 @@ func GetProfile(container *container.Container, userProfileRepository profiles_r
 
 		userID := c.Param("user_id")
 
-		logger.Info("Getting work experience", "user_id", userID)
-
 		userProfile, err := userProfileRepository.GetUserProfile(userID)
-
-		logger.Info("User profile", "user_profile", userProfile, "err", err)
 
 		if err != nil {
 			logger.Error("Error getting user profile", "error", err)
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": "Error getting user profile"})
 		}
+
+		logger.Info("User profile", "user_profile", userProfile, "err", err)
 
 		if userProfile == nil {
 			return c.JSON(http.StatusNotFound, &echo.Map{"message": "User profile not found"})

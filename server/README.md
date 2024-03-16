@@ -19,3 +19,12 @@
 ## Running without container
 
 sh start.sh
+
+# ToDo
+
+- Emails Module
+  - Create template
+  - Connect to amazon SNS
+- Files Module
+  - Connect with S3 to upload the CV
+- Implement candidates list and filters for easy search (maybe explore elasticsearch)

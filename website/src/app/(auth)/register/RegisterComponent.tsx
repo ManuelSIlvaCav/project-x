@@ -1,5 +1,6 @@
 "use client";
 import { register } from "@/app/lib/actions/register";
+import ErrorAlert from "@/components/Alerts/ErrorAlerts";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/Fields";
 import GithubLoginButton from "@/components/Login/GithubLoginButton";
@@ -43,6 +44,11 @@ export default function RegisterComponent() {
           autoComplete="new-password"
           required
         />
+        {state?.error ? (
+          <div className="col-span-full">
+            <ErrorAlert title={"Errors in signup"} messages={[state.error]} />
+          </div>
+        ) : null}
       </div>
       <Button type="submit" variant="solid" className="mt-8 w-full">
         Register

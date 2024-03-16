@@ -8,7 +8,7 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { Logo } from "@/components/Logo";
 import { NavLinks } from "@/components/NavLinks";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { Menu } from "@headlessui/react";
 
@@ -57,6 +57,20 @@ function MobileNavLink(
 }
 
 function LoginDropDown() {
+  const session = useSession();
+  const userLoggedIn = session.data?.user?.accessToken;
+
+  if (userLoggedIn) {
+    return (
+      <Link href="/profile">
+        {/* component representing a tab for profile acess without a tag*/}
+        <Button variant="outline" className="lg:block">
+          Profile
+        </Button>
+      </Link>
+    );
+  }
+
   let ButtonWithRef = forwardRef<HTMLButtonElement, {}>(
     function MyButtonWithRef(props, ref) {
       return (
@@ -110,6 +124,13 @@ function LoginDropDown() {
 }
 
 function SignupDropDown() {
+  const session = useSession();
+  const userLoggedIn = session.data?.user?.accessToken;
+
+  if (userLoggedIn) {
+    return null;
+  }
+
   let ButtonWithRef = forwardRef<HTMLButtonElement, {}>(
     function MyButtonWithRef(props, ref) {
       return (
@@ -216,18 +237,6 @@ export default function Header() {
                             </MobileNavLink>
                             <MobileNavLink href="/#faqs">FAQs</MobileNavLink>
                           </div>
-                          {/* <div className="mt-8 flex flex-col gap-4">
-                            
-                            <Button
-                              onClick={() => {
-                                signIn();
-                              }}
-                              variant="outline"
-                            >
-                              Log in
-                            </Button>
-                            <Button href="/register">Sign up</Button>
-                          </div> */}
                         </Popover.Panel>
                       </>
                     )}

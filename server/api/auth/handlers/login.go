@@ -7,40 +7,46 @@ import (
 
 	jwtUtils "server/api/auth/jwt"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	UserLogin struct {
-		Email    string `json:"email" validate:"required,email"`
+		Email    string `json:"email" validate:"required,email" errormgs:"is required and must be a valid email address"`
 		Password string `json:"password" validate:"required"`
 	}
 )
 
-var validate = validator.New()
-
 func Login(container *container.Container, userModule *users.UserModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
-
-		logger := container.GetLogger()
+		validator := container.GetCustomValidator()
 
 		var user UserLogin
 
 		if err := c.Bind(&user); err != nil {
+
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&user); validationErr != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
+		structToValidate := &user
+		if validationErrs := validator.ValidateStruct(*structToValidate); validationErrs != nil {
+
+			if uw, ok := validationErrs.(interface{ Unwrap() []error }); ok {
+				errs := uw.Unwrap()
+				//Return all errors to the client
+				arr := []string{}
+				for _, err := range errs {
+					arr = append(arr, err.Error())
+				}
+				return c.JSON(http.StatusBadRequest, &echo.Map{"errors": arr})
+			}
+
+			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs.Error()})
 		}
 
 		userRepository := userModule.UserRepository
 
 		userFound, err := userRepository.LoginUser(user.Email, user.Password)
-
-		logger.Info("User data ", "user", userFound)
 
 		if err != nil || userFound == nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Invalid email or password"})

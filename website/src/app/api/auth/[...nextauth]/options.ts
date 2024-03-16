@@ -34,13 +34,21 @@ callbacks.session = async ({ session, token }) => {
   return session;
 };
 
+callbacks.signIn = async ({ user, account, profile, email, credentials }) => {
+  if (user?.errorMessage) {
+    throw new Error(user.errorMessage ?? "Error signing in");
+  }
+  return true;
+};
+
 const providers = [
   CredentialsProvider({
     credentials: {
       email: { label: "email", type: "email" },
       password: { label: "password", type: "password" },
     },
-    async authorize(credentials) {
+    async authorize(credentials, req): Promise<User | null | any> {
+      //Sorry for the any, but I'm not sure what the return type should be authorize gets crazy
       try {
         if (!credentials?.email || !credentials?.password) return null;
 
@@ -52,7 +60,11 @@ const providers = [
           },
         });
 
-        if (!res.ok) return null;
+        if (!res.ok) {
+          const errorData: { errors: string[] } = await res.json();
+          const errorMessage = errorData?.errors?.join(", ");
+          return { errorMessage };
+        }
 
         const loginData: { token: string; userId: string } = await res.json();
 
@@ -70,7 +82,7 @@ const providers = [
         }
 
         return null;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error on authorize", { error });
         return null;
       }

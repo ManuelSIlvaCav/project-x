@@ -5,6 +5,16 @@ import { FormEvent, useContext, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { WorkExperienceWizardContext } from "../WorkExperienceSection/context";
 
+enum CharCodeEnum {
+  SPACE = 32,
+  NEWLINE = 10,
+  TAB = 9,
+  CR = 13,
+  BULLET = 8226,
+}
+
+const bullet = "\u2022";
+
 export default function RoleOverviewForm(props: { handleNext: () => void }) {
   const { handleNext } = props;
   const workExperienceWizardData = useContext(WorkExperienceWizardContext);
@@ -37,24 +47,35 @@ export default function RoleOverviewForm(props: { handleNext: () => void }) {
     dispatch(formData);
   }
 
-  let previousLength = 0;
-
   const handleInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    const bullet = "\u2022";
     const newLength = e.currentTarget.value.length;
 
     const characterCode = e.currentTarget.value
       .substring(newLength - 1, newLength)
       .charCodeAt(0);
 
-    if (newLength > previousLength) {
-      if (characterCode === 10) {
-        e.currentTarget.value = `${e.currentTarget.value}${bullet} `;
-      } else if (newLength === 1) {
-        e.currentTarget.value = `${bullet} ${e.currentTarget.value}`;
-      }
+    const previousCharacterCode = e.currentTarget.value
+      .substring(newLength - 2, newLength - 1)
+      .charCodeAt(0);
+
+    if (newLength === 1) {
+      return (e.currentTarget.value = `${bullet} ${e.currentTarget.value}`);
     }
-    previousLength = newLength;
+
+    //Charcode enter
+    if (characterCode === CharCodeEnum.NEWLINE) {
+      if (
+        previousCharacterCode === CharCodeEnum.SPACE ||
+        previousCharacterCode === CharCodeEnum.TAB ||
+        previousCharacterCode === CharCodeEnum.BULLET
+      ) {
+        return (e.currentTarget.value = e.currentTarget.value.substring(
+          0,
+          newLength - 1
+        ));
+      }
+      e.currentTarget.value = `${e.currentTarget.value}${bullet} `;
+    }
   };
 
   const placeHolder = `• Joined as the 3rd software engineer and developed the engineering function...

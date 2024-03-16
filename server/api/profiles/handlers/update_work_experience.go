@@ -55,7 +55,7 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		validate := container.GetValidator()
+		validate := container.GetCustomValidator().GetValidator()
 
 		//use the validator library to validate required fields
 		if validationErr := validate.Struct(&workExperienceData); validationErr != nil {

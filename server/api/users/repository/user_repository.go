@@ -9,6 +9,8 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepository interface {
@@ -25,6 +27,12 @@ type userRepository struct {
 }
 
 func NewUserRepository(container *container.Container) *userRepository {
+	indexes := []mongo.IndexModel{}
+	indexes = append(indexes, mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	})
+	container.GetMongoDB().PopulateIndexes("users", indexes)
 	return &userRepository{container: container}
 }
 
@@ -42,6 +50,9 @@ func (repo *userRepository) CreateUser(user user_models.User) (string, error) {
 	result, err := userCollection.InsertOne(ctx, user)
 
 	if err != nil {
+		if mongo.IsDuplicateKeyError(err) {
+			return "", errors.New("Email already exists")
+		}
 		return "", err
 	}
 

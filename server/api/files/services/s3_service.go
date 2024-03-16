@@ -3,6 +3,7 @@ package files_services
 import (
 	"io"
 	"server/container"
+	"server/container/utils/config"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -20,25 +21,32 @@ type (
 
 // NewS3Service creates a new S3 service
 func NewS3Service(container *container.Container) *s3Service {
-	s3Session := getNewSession(container)
-
-	return &s3Service{container: container, s3Session: s3Session, mainBucket: "venand-images"}
-}
-
-func getNewSession(container *container.Container) *session.Session {
-
+	logger := container.GetLogger()
 	config := container.GetConfig()
 
+	logger.Info("Creating new S3 session", "region", config.AWS.Region, "accessKeyId", config.AWS.AccessKeyId, "secretKeyId", config.AWS.SecretKeyId)
+
+	s3Session := getNewSession(config)
+
+	return &s3Service{
+		container:  container,
+		s3Session:  s3Session,
+		mainBucket: "project-x-eu-1"}
+}
+
+func getNewSession(config config.Config) *session.Session {
 	region := config.AWS.Region
+	awsAccessKey := config.AWS.AccessKeyId
+	awsSecretKey := config.AWS.SecretKeyId
 
-	logger := container.GetLogger()
-
-	logger.Info("Creating new S3 session", "region", region, "accessKeyId", config.AWS.AccessKeyId, "secretKeyId", config.AWS.SecretKeyId)
-
-	s3Session := session.Must(session.NewSession(&aws.Config{
-		Region:      aws.String(region),
-		Credentials: credentials.NewStaticCredentials(config.AWS.AccessKeyId, config.AWS.SecretKeyId, ""),
-	}))
+	s3Session := session.Must(
+		session.NewSession(&aws.Config{
+			Region: aws.String(region),
+			Credentials: credentials.NewStaticCredentials(
+				awsAccessKey,
+				awsSecretKey,
+				""),
+		}))
 
 	return s3Session
 
@@ -46,7 +54,7 @@ func getNewSession(container *container.Container) *session.Session {
 
 // UploadFile uploads a file to S3
 func (s *s3Service) UploadFile(fileName string, body io.Reader) (string, error) {
-
+	logger := s.container.GetLogger()
 	uploader := s3manager.NewUploader(s.s3Session, func(u *s3manager.Uploader) {
 		// Define a strategy that will buffer 25 MiB in memory
 		u.BufferProvider = s3manager.NewBufferedReadSeekerWriteToPool(25 * 1024 * 1024)
@@ -60,9 +68,12 @@ func (s *s3Service) UploadFile(fileName string, body io.Reader) (string, error) 
 	})
 
 	if err != nil {
-		s.container.GetLogger().Error("Failed to upload file", err)
+		logger.Error("Failed to upload file", err)
 		return "", err
 	}
+
+	//We need to save the file into collection for future Reference
+	logger.Info("File uploaded successfully", "result", result)
 
 	return result.Location, nil
 

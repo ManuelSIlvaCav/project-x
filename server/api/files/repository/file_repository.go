@@ -9,7 +9,7 @@ import (
 )
 
 type FilesRepository interface {
-	SaveFile() (string, error)
+	SaveFile(file files_model.File) (string, error)
 }
 
 type filesRepository struct {
@@ -21,7 +21,8 @@ func NewFilesRepository(container *container.Container) *filesRepository {
 }
 
 // We insert a new file into S3 and return the ID of the file in the DB
-func (repo *filesRepository) SaveFile(ctx context.Context, file files_model.File) (string, error) {
+func (repo *filesRepository) SaveFile(file files_model.File) (string, error) {
+	ctx := context.Background()
 	filesCollection := (repo.container.GetMongoDB()).GetCollection("files")
 
 	result, err := filesCollection.InsertOne(ctx, file)

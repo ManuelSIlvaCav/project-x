@@ -19,6 +19,9 @@ type UserProfilesRepository interface {
 	GetUserProfile(userId string) (*profiles_models.UserProfile, error)
 	// UpdateUserProfileWorkExperience updates the work experience of a user
 	UpdateUserProfileWorkExperience(userId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error)
+
+	// UpdateUserProfileEducation updates the education of a user
+	UpdateProfileCV(userId string, fileId string) (bool, error)
 }
 
 type userProfilesRepository struct {
@@ -26,6 +29,12 @@ type userProfilesRepository struct {
 }
 
 func NewUserProfilesRepository(container *container.Container) *userProfilesRepository {
+	//We setup the indexes for the user_profiles collection
+	indexes := []mongo.IndexModel{}
+	indexes = append(indexes, mongo.IndexModel{
+		Keys: bson.D{{Key: "userId", Value: 1}},
+	})
+	container.GetMongoDB().PopulateIndexes("user_profiles", indexes)
 	return &userProfilesRepository{container}
 }
 
@@ -40,24 +49,102 @@ func (repo *userProfilesRepository) CreateUserProfile(newProfile profiles_models
 }
 
 func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_models.UserProfile, error) {
+	logger := repo.container.GetLogger()
 	ctx := context.TODO()
 	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
 	objectID, _ := primitive.ObjectIDFromHex(userId)
-	filter := bson.D{{Key: "userId", Value: objectID}}
 
-	userProfile := userCollection.FindOne(ctx, filter)
+	matchStage := bson.D{
+		{
+			Key: "$match", Value: bson.D{
+				{Key: "userId", Value: objectID},
+			},
+		},
+	}
 
-	var userProfileFound profiles_models.UserProfile
-	err := userProfile.Decode(&userProfileFound)
+	lookupStage := bson.D{
+		{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "files"},
+				{Key: "localField", Value: "cvFileId"},
+				{Key: "foreignField", Value: "_id"},
+				{Key: "as", Value: "cv"},
+			},
+		},
+	}
+
+	unwindStage := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$cv"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
+
+	resCursor, err := userCollection.Aggregate(ctx, mongo.Pipeline{matchStage, lookupStage, unwindStage})
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
+		logger.Error("Error aggregating", "error", err)
+	}
+
+	var resultProfile []bson.M
+
+	if err = resCursor.All(ctx, &resultProfile); err != nil {
+		logger.Error("Error getting result", "error", err)
 		return nil, err
 	}
 
-	return &userProfileFound, nil
+	logger.Info("Aggr result", "profile", resultProfile)
+
+	if len(resultProfile) == 0 {
+		return nil, errors.New("no profile found for user")
+	}
+
+	// Create a new instance of UserProfile
+	userProfile := &profiles_models.UserProfile{}
+
+	// Assign values from resultProfile[0] to userProfile
+	bsonBytes, _ := bson.Marshal(resultProfile[0])
+	bson.Unmarshal(bsonBytes, userProfile)
+
+	return userProfile, nil
+
+	// filter := bson.D{{Key: "userId", Value: objectID}}
+	// userProfile := userCollection.FindOne(ctx, filter)
+
+	// var userProfileFound profiles_models.UserProfile
+	// err = userProfile.Decode(&userProfileFound)
+
+	// if err != nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		return nil, nil
+	// 	}
+	// 	return nil, err
+	// }
+
+	// return &userProfileFound, nil
+}
+
+func (repo *userProfilesRepository) UpdateProfileCV(userId string, fileId string) (bool, error) {
+	ctx := context.Background()
+	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
+
+	objectUserID, userIdObjectError := primitive.ObjectIDFromHex(userId)
+
+	if userIdObjectError != nil {
+		return false, errors.New("could not parse user id")
+	}
+
+	objectFileID, fileIdObjectError := primitive.ObjectIDFromHex(fileId)
+
+	if fileIdObjectError != nil {
+		return false, errors.New("could not parse file id")
+	}
+
+	filter := bson.D{{Key: "userId", Value: objectUserID}}
+	update := bson.M{"$set": bson.M{"cvFileId": objectFileID}}
+
+	_, err := userCollection.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(userId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error) {

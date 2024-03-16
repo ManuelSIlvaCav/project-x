@@ -1,4 +1,4 @@
-import { AuthLayout } from "@/app/(auth)/login/AuthLayout";
+import { AuthLayout } from "@/app/(auth)/AuthLayout";
 import { type Metadata } from "next";
 import Link from "next/link";
 import LoginComponent from "./LoginComponent";

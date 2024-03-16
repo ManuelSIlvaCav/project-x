@@ -4,49 +4,39 @@ import (
 	"context"
 	"net/http"
 	files_module "server/api/files"
+	files_model "server/api/files/models"
+	profiles_repository "server/api/profiles/repository"
 	"server/container"
 	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
-type (
-	CVData struct {
-		UserId string `json:"user_id" form:"user_id" validate:"required"`
-	}
-)
-
-func UploadCV(container *container.Container, fileModule *files_module.FilesModule) echo.HandlerFunc {
+func UploadCV(container *container.Container, fileModule *files_module.FilesModule, userProfileRepository profiles_repository.UserProfilesRepository) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := context.Background()
 		logger := container.GetLogger()
 
 		_, cancel := context.WithTimeout(ctx, 10*time.Second)
+
 		defer cancel()
 
-		var cvData CVData
+		logger.Info("Started uploading cv")
 
-		logger.Info("Started UploadCV")
+		userId := c.FormValue("user_id")
 
-		if err := c.Bind(&cvData); err != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
-		}
-
-		validate := container.GetValidator()
-
-		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&cvData); validationErr != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
+		if userId == "" {
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "user_id is required"})
 		}
 
 		file, err := c.FormFile("cv")
-
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		src, err := file.Open()
-		if err != nil {
+		src, openErr := file.Open()
+
+		if openErr != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
@@ -55,16 +45,35 @@ func UploadCV(container *container.Container, fileModule *files_module.FilesModu
 		//We want to upload the CV to s3 files and save the File Object reference in the user profile
 		result, err := fileModule.FileService.UploadFile(file.Filename, src)
 
-		time.Sleep(4 * time.Second)
-
 		if err != nil {
 			logger.Error("Failed to upload CV", "error", err)
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": "failed to upload CV"})
 		}
 
-		logger.Info("CV uploaded successfully", "result", result)
+		logger.Info("Saving file file repository and user profile", "result", result)
 
-		//We will upsert the user profile with the new file object reference
+		fileObject := files_model.File{
+			Name: file.Filename,
+			Size: file.Size,
+			URL:  result,
+		}
+
+		fileResult, fileError := fileModule.FilesRepository.SaveFile(fileObject)
+
+		if fileError != nil {
+			logger.Error("Failed to save file", "error", fileError)
+			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": "failed to save file"})
+		}
+
+		logger.Info("File saved in db, updating user", "result", fileResult)
+
+		//We need to save the file into collection for future Reference
+		_, fileAssignmentError := userProfileRepository.UpdateProfileCV(userId, fileResult)
+
+		if fileAssignmentError != nil {
+			logger.Error("Failed to assign file to user", "error", fileAssignmentError)
+
+		}
 
 		return c.JSON(http.StatusOK, &echo.Map{"message": "success"})
 	}

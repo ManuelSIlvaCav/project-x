@@ -1,7 +1,7 @@
 "use client";
 
+import ErrorAlert from "@/components/Alerts/ErrorAlerts";
 import { Button } from "@/components/Button";
-import FieldErrorMessage from "@/components/FieldErrorMessage";
 import { TextField } from "@/components/Fields";
 import { signIn } from "next-auth/react";
 
@@ -12,7 +12,6 @@ type Props = {
 
 export default function CompanyLoginComponent(props: Props) {
   const { error } = props;
-  const hasError = false;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,7 +32,6 @@ export default function CompanyLoginComponent(props: Props) {
           type="email"
           autoComplete="email"
           required
-          errorMessage={hasError ? "Please enter a valid email address." : null}
         />
         <TextField
           label="Password"
@@ -41,11 +39,12 @@ export default function CompanyLoginComponent(props: Props) {
           type="password"
           autoComplete="current-password"
           required
-          errorMessage={hasError ? "Please enter a valid email address." : null}
         />
       </div>
 
-      {error ? <FieldErrorMessage>{error}</FieldErrorMessage> : null}
+      {error ? (
+        <ErrorAlert title="Error login" messages={[error]}></ErrorAlert>
+      ) : null}
 
       <Button type="submit" variant="solid" className="mt-8 w-full">
         Sign in to account

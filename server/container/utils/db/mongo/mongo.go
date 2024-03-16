@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"server/container/utils/config"
 	"server/container/utils/logger"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,11 +15,13 @@ import (
 type MongoDB interface {
 	GetClient() *mongo.Client
 	GetCollection(collection string) *mongo.Collection
+	PopulateIndexes(collection string, indexes []mongo.IndexModel) error
 }
 
 type mongoDB struct {
 	db               *mongo.Client
 	mainDatabaseName string
+	logger           logger.Logger
 }
 
 func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
@@ -57,6 +60,7 @@ func NewMongoDB(config config.Config, logger logger.Logger) *mongoDB {
 	db := &mongoDB{
 		db:               client,
 		mainDatabaseName: config.MongoDB.MainDatabase,
+		logger:           logger,
 	}
 
 	return db
@@ -68,4 +72,17 @@ func (db *mongoDB) GetClient() *mongo.Client {
 
 func (db *mongoDB) GetCollection(collection string) *mongo.Collection {
 	return db.db.Database(db.mainDatabaseName).Collection(collection)
+}
+
+func (db *mongoDB) PopulateIndexes(collection string, indexes []mongo.IndexModel) error {
+
+	col := db.db.Database(db.mainDatabaseName).Collection(collection)
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	results, err := col.Indexes().CreateMany(context.Background(), indexes, opts)
+	if err != nil {
+		db.logger.Error("Error creating indexes", "error", err)
+		return err
+	}
+	db.logger.Info("Created indexes", "results", results)
+	return nil
 }

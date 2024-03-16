@@ -38,6 +38,7 @@ type ButtonProps = (
     | (Omit<React.ComponentPropsWithRef<"button">, "color"> & {
         forwardref?: React.Ref<HTMLButtonElement>;
         href?: undefined;
+        loading?: boolean;
       })
   );
 
@@ -58,7 +59,7 @@ export function Button({ className, children, ...props }: ButtonProps) {
   );
 
   if (typeof props.href === "undefined") {
-    const { forwardref, ...rest } = props;
+    const { forwardref, loading, ...rest } = props;
     return (
       <button
         className={className}
@@ -66,7 +67,7 @@ export function Button({ className, children, ...props }: ButtonProps) {
         ref={forwardref}
         disabled={pending}
       >
-        {pending ? (
+        {pending || loading ? (
           <svg
             className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
             xmlns="http://www.w3.org/2000/svg"

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useRef, useState } from "react";
 
 export function NavLinks() {
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -20,12 +20,12 @@ export function NavLinks() {
       className="relative -mx-3 -my-2 rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors delay-150 hover:text-gray-900 hover:delay-0"
       onMouseEnter={() => {
         if (timeoutRef.current) {
-          window.clearTimeout(timeoutRef.current);
+          window?.clearTimeout(timeoutRef.current);
         }
         setHoveredIndex(index);
       }}
       onMouseLeave={() => {
-        timeoutRef.current = window.setTimeout(() => {
+        timeoutRef.current = window?.setTimeout(() => {
           setHoveredIndex(null);
         }, 200);
       }}

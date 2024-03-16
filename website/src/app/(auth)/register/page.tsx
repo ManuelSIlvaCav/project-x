@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AuthLayout } from "../login/AuthLayout";
+import { AuthLayout } from "../AuthLayout";
 import RegisterComponent from "./RegisterComponent";
 
 export default function Register() {

@@ -15,7 +15,6 @@ export default function DescriptionInput(props: Props) {
   let previousLength = 0;
 
   const handleInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    //console.log("handleing", e.currentTarget.value);
     const bullet = "\u2022";
     const newLength = e.currentTarget.value.length;
 

@@ -5,6 +5,7 @@ import UploadCVComponent from "./UploadCVComponent";
 
 async function InnerUploadCV() {
   const profile = await getProfile();
+  console.log({ profile });
   return <UploadCVComponent profile={profile} />;
 }
 

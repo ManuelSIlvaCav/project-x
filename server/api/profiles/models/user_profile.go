@@ -1,13 +1,19 @@
 package profiles_models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	files_model "server/api/files/models"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type (
 	UserProfile struct {
 		ID     string              `json:"id" bson:"_id,omitempty"`
 		UserID *primitive.ObjectID `bson:"userId" json:"userId"`
 
-		UploadCVFileID *primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
+		CvFileId *primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
+
+		CV *files_model.File `json:"cv,omitempty" bson:"cv,omitempty"` // CV file should be used as ref when using lookup in mongo
 
 		//Contact information
 		ContactInformation *ContactInformation `json:"contactInformation,omitempty" bson:"contactInformation,omitempty"`

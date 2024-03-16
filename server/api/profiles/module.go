@@ -22,7 +22,7 @@ func NewProfilesModule(container *container.Container, router *router.Router, fi
 
 	routes := []interfaces.Route{}
 	routes = append(routes,
-		router.BuildRoute("POST", "/upload-cv", profiles_handlers.UploadCV(container, filesModule)),
+		router.BuildRoute("POST", "/upload-cv", profiles_handlers.UploadCV(container, filesModule, userProfilesRepository)),
 		router.BuildRoute("PUT", "/:user_id/work-experience", profiles_handlers.UpdateWorkExperience(container, userProfilesRepository)),
 		router.BuildRoute("GET", "/:user_id", profiles_handlers.GetProfile(container, userProfilesRepository)),
 	)
