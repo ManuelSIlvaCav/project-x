@@ -5,7 +5,7 @@ import SideBarNavigation from "./";
 import { HomeIcon, UsersIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: "Dashboard", href: "/admin", icon: HomeIcon },
+  { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Emails", href: "/admin/emails", icon: UsersIcon },
 ];
 

@@ -43,6 +43,7 @@ type ButtonProps = (
   );
 
 export function Button({ className, children, ...props }: ButtonProps) {
+  //Only works when form is submitted via action
   const { pending } = useFormStatus();
 
   props.variant ??= "solid";

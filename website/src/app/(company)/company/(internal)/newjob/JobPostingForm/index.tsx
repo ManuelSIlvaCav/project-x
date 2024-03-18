@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/Button";
-import Checkboxes from "@/components/Checkboxes";
 import CustomSelect from "@/components/CustomSelect";
 import DescriptionInput from "@/components/DescriptionInput";
 import NotificationToast from "@/components/NotificationToast";
+import MultiRangeSlider from "@/components/RangeSlider";
 import SectionHeader from "@/components/SectionHeader";
 import toast from "react-hot-toast";
 
@@ -22,6 +22,16 @@ const locations = [
   { id: "4", label: "London" },
 ];
 
+const experienceLevels = {
+  0: "Intern",
+  1: "Junior",
+  2: "Semi Senior",
+  3: "Senior",
+  4: "Lead",
+  5: "Director",
+  6: "VP",
+};
+
 const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   //toast.success("Job posting saved"); // Displays a success message
@@ -32,46 +42,101 @@ const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 
 export default function JobPostingForm() {
   return (
-    <form onSubmit={onSubmit}>
+    <>
       <h1 className="flex align-center font-bold text-3xl pb-8">
         Tell us more about your job posting!
       </h1>
-      <div className="flex flex-col gap-4">
-        <SectionHeader
-          title="First things first, tell us about the rol"
-          description="Please include role name, experience level and a role description"
-        />
-        <div>
-          <div className="">
-            <CustomSelect label="Function" name="role" options={roles} />
-          </div>
-          <div className="py-8">
-            <Checkboxes
-              label="Experience level"
-              name="experience_level"
-              options={[]}
+      <form onSubmit={onSubmit}>
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-2">
+            <SectionHeader
+              title="First things first, tell us about the role"
+              description="Please include role name, experience level and a role description"
             />
+            <div>
+              <div className="">
+                <CustomSelect label="Role name" name="role" options={roles} />
+              </div>
+
+              <div className="py-8 h-3/5">
+                <MultiRangeSlider
+                  title="Experience level"
+                  step={1}
+                  min={0}
+                  max={Object.entries(experienceLevels).length - 1}
+                  onChange={() => {}}
+                  valuesName={experienceLevels}
+                />
+              </div>
+            </div>
           </div>
 
-          <DescriptionInput label="Role description" name="role_description" />
-        </div>
+          <div className="flex flex-col gap-2">
+            <SectionHeader
+              title="Now tell us about the location of the role"
+              description="Please include if the job is remote/hybrid/in-office and the location of the office if required"
+            />
 
-        <SectionHeader
-          title="Now tell us about the location of the role"
-          description="Please include if the job is remote/hybrid/in-office and the location of the office if required"
-        />
+            <div>
+              <div className="">
+                <CustomSelect
+                  label="Where is this job based?"
+                  name="role"
+                  options={locations}
+                />
+              </div>
+            </div>
+          </div>
 
-        <div className="">
-          <CustomSelect
-            label="Where is this job based?"
-            name="role"
-            options={locations}
-          />
+          <div className="flex flex-col gap-2">
+            <SectionHeader
+              title="Tell us the details of the role"
+              description="Please include the role description, responsibilities and requirements"
+            />
+
+            <div>
+              <div className="">
+                <DescriptionInput
+                  label="Role description"
+                  name="role_description"
+                />
+              </div>
+              <div className="">
+                <DescriptionInput
+                  label="Role requirements"
+                  name="role_requirements"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <SectionHeader
+              title="Finally what you offer"
+              description="Please include company benefits, salary and any other perks"
+            />
+
+            <div>
+              <div className="">
+                <DescriptionInput
+                  label="Role description"
+                  name="role_description"
+                />
+              </div>
+              <div className="">
+                <DescriptionInput
+                  label="Role requirements"
+                  name="role_requirements"
+                />
+              </div>
+            </div>
+          </div>
+
+          <Button className="mt-4" type="submit">
+            {"Save and continue"}
+          </Button>
         </div>
-        <Button className="mt-4" type="submit">
-          {"Save and continue"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </>
   );
 }

@@ -31,7 +31,8 @@ export default function SideBarLayout(props: Props) {
   const navigation = props.navigationList;
 
   function isCurrent(href: string): boolean {
-    return href === pathname;
+    // Only match if pathname matches href with wildcards
+    return href === pathname || pathname.startsWith(href);
   }
 
   return (

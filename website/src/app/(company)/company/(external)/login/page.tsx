@@ -1,6 +1,6 @@
-import LoginComponent from "@/app/(auth)/login/LoginComponent";
 import Link from "next/link";
 import { CompanyLayout } from "../CompanyLayout";
+import LoginComponent from "./LoginComponent";
 
 export default function CompanySignupPage() {
   return (
@@ -8,11 +8,10 @@ export default function CompanySignupPage() {
       title="Sign in to account"
       subtitle={
         <>
-          Already have an account?{" "}
-          <Link href="/company/login" className="text-cyan-600">
-            Sign in
+          Don’t have an account?{" "}
+          <Link href="/company/signup" className="text-cyan-600">
+            Sign up
           </Link>{" "}
-          to your account.
         </>
       }
     >

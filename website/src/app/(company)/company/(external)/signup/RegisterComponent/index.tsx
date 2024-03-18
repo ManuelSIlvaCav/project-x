@@ -1,11 +1,14 @@
 "use client";
-import { register } from "@/app/lib/actions/register";
+import { companySignup } from "@/app/lib/actions/company/signup";
+import ErrorAlert from "@/components/Alerts/ErrorAlerts";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/Fields";
 import { useFormState } from "react-dom";
 
 export default function RegisterComponent() {
-  const [state, dispatch] = useFormState(register, null);
+  const [state, dispatch] = useFormState(companySignup, null);
+
+  console.log({ state });
 
   return (
     <form action={dispatch}>
@@ -38,6 +41,14 @@ export default function RegisterComponent() {
           autoComplete="new-password"
           required
         />
+        {state?.errors?.length ? (
+          <ErrorAlert
+            title={"Error in signup"}
+            messages={state?.errors.map((error) => {
+              return error.message;
+            })}
+          />
+        ) : null}
       </div>
       <Button type="submit" variant="solid" className="mt-8 w-full">
         Register

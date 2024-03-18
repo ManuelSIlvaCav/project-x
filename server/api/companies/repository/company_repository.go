@@ -1,10 +1,9 @@
-package company_repository
+package companies_repository
 
 import (
 	"context"
 	companies_models "server/api/companies/models"
 	"server/container"
-	"server/helpers/passwords"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -25,13 +24,13 @@ func (repo *companyRepository) CreateCompany(company companies_models.Company) (
 	ctx := context.Background()
 	companyCollection := (repo.container.GetMongoDB()).GetCollection("companies")
 
-	hashedPassword, err := passwords.Hash(company.Password)
-	if err != nil {
-		return "", err
+	// hashedPassword, err := passwords.Hash(company.Password)
+	// if err != nil {
+	// 	return "", err
 
-	}
+	// }
 
-	company.Password = hashedPassword
+	// company.Password = hashedPassword
 
 	result, err := companyCollection.InsertOne(ctx, company)
 
@@ -39,5 +38,6 @@ func (repo *companyRepository) CreateCompany(company companies_models.Company) (
 		return "", err
 	}
 
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	insertedID := result.InsertedID.(primitive.ObjectID).Hex()
+	return insertedID, nil
 }

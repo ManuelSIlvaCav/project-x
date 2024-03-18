@@ -21,7 +21,7 @@ export default function ErrorAlert(props: Props) {
             <>
               <div className="mt-2 text-sm text-red-700">
                 <ul role="list" className="list-disc space-y-1 pl-5">
-                  {props.messages?.map((message, index) => {
+                  {props?.messages?.map((message, index) => {
                     return <li key={index}>{message}</li>;
                   })}
                 </ul>

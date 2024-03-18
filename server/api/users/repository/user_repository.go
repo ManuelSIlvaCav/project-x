@@ -15,11 +15,11 @@ import (
 
 type UserRepository interface {
 	CreateUser(user user_models.User) (string, error)
-	GetUser(username string) (*user_models.User, error)
+	GetUser(email string, filter map[string]interface{}) (*user_models.User, error)
 	GetUserByID(id string) (*user_models.User, error)
 
 	//Candidates for a service module
-	LoginUser(email string, password string) (*user_models.User, error)
+	LoginUser(email string, password string, filter map[string]interface{}) (*user_models.User, error)
 }
 
 type userRepository struct {
@@ -29,7 +29,7 @@ type userRepository struct {
 func NewUserRepository(container *container.Container) *userRepository {
 	indexes := []mongo.IndexModel{}
 	indexes = append(indexes, mongo.IndexModel{
-		Keys:    bson.D{{Key: "email", Value: 1}},
+		Keys:    bson.D{{Key: "email", Value: 1}, {Key: "generalRole", Value: 1}},
 		Options: options.Index().SetUnique(true),
 	})
 	container.GetMongoDB().PopulateIndexes("users", indexes)
@@ -60,14 +60,18 @@ func (repo *userRepository) CreateUser(user user_models.User) (string, error) {
 
 }
 
-func (repo *userRepository) GetUser(email string) (*user_models.User, error) {
+func (repo *userRepository) GetUser(email string, filter map[string]interface{}) (*user_models.User, error) {
 	ctx := context.Background()
 	//We hash the password first to test
 	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 
-	filter := bson.D{{Key: "email", Value: email}, {Key: "deleted_at", Value: nil}}
+	customFilter := bson.D{
+		{Key: "email", Value: email},
+		{Key: "generalRole", Value: filter["generalRole"]},
+		{Key: "deleted_at", Value: nil},
+	}
 
-	user := userCollection.FindOne(ctx, filter)
+	user := userCollection.FindOne(ctx, customFilter)
 
 	var userFound user_models.User
 
@@ -79,8 +83,8 @@ func (repo *userRepository) GetUser(email string) (*user_models.User, error) {
 }
 
 // LoginUser logs in a user and validates the password
-func (repo *userRepository) LoginUser(email string, password string) (*user_models.User, error) {
-	user, err := repo.GetUser(email)
+func (repo *userRepository) LoginUser(email string, password string, filter map[string]interface{}) (*user_models.User, error) {
+	user, err := repo.GetUser(email, filter)
 
 	if err != nil {
 		return nil, err

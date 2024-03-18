@@ -1,3 +1,4 @@
+import { CustomError } from "@/app/lib/interfaces/Error";
 import {
   Account,
   AuthOptions,
@@ -16,7 +17,7 @@ callbacks.jwt = async (params: {
   user: User | AdapterUser;
   account: Account | null;
   profile?: Profile | undefined;
-  trigger?: "signIn" | "signUp" | "update" | undefined;
+  trigger?: "signIn" | "signUp" | "update";
   isNewUser?: boolean | undefined;
   session?: any;
 }) => {
@@ -24,6 +25,10 @@ callbacks.jwt = async (params: {
   if (account?.type === "credentials") {
     token.accessToken = user.accessToken;
     token.userId = user.userId;
+    token.generalRole = user.generalRole;
+    if (user.roles && Array.isArray(user.roles)) {
+      token.roles = user.roles;
+    }
   }
   return token;
 };
@@ -31,6 +36,7 @@ callbacks.jwt = async (params: {
 callbacks.session = async ({ session, token }) => {
   session.user.accessToken = token.accessToken;
   session.user.userId = token.userId;
+  session.user.generalRole = token.generalRole;
   return session;
 };
 
@@ -46,10 +52,12 @@ const providers = [
     credentials: {
       email: { label: "email", type: "email" },
       password: { label: "password", type: "password" },
+      generalRole: { label: "generalRole", type: "text" },
     },
     async authorize(credentials, req): Promise<User | null | any> {
       //Sorry for the any, but I'm not sure what the return type should be authorize gets crazy
       try {
+        console.log("credentials", credentials);
         if (!credentials?.email || !credentials?.password) return null;
 
         const res = await fetch(`${process.env.API_PATH}/auth/login`, {
@@ -61,21 +69,33 @@ const providers = [
         });
 
         if (!res.ok) {
-          const errorData: { errors: string[] } = await res.json();
-          const errorMessage = errorData?.errors?.join(", ");
+          const errorData: CustomError = await res.json();
+          const errorMessage =
+            errorData?.errors?.[0]?.message ?? "Error signing in";
+          console.log("Error on authorize", {
+            errorData: JSON.stringify(errorData),
+            errorMessage,
+          });
           return { errorMessage };
         }
 
-        const loginData: { token: string; userId: string } = await res.json();
+        const loginData: {
+          token: string;
+          user_id: string;
+          general_role: string;
+        } = await res.json();
+
+        console.log("loginData", loginData);
 
         if (loginData?.token) {
           const sessionUser = {
-            id: loginData.userId, // required string !!!
-            name: undefined, // undefined | null | string
-            email: credentials?.email, // undefined | null | string
-            image: undefined, // undefined | null | string
-            accessToken: loginData.token, // undefined | null | string
-            userId: loginData.userId, // undefined | null | string
+            id: loginData.user_id,
+            email: credentials?.email,
+            accessToken: loginData.token,
+            userId: loginData.user_id,
+            generalRole: loginData?.general_role,
+            name: undefined,
+            image: undefined,
           };
 
           return sessionUser;

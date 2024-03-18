@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import authOptions from "../api/auth/[...nextauth]/options";
 import { Header } from "./Header";
 
 export const metadata: Metadata = {
@@ -14,7 +17,16 @@ type Props = {} & Readonly<{
   children: React.ReactNode;
 }>;
 
-export default function CandidateLayout(props: Props) {
+export default async function CandidateLayout(props: Props) {
+  const session = await getServerSession(authOptions);
+
+  if (
+    !["candidate", "admin"].includes(session?.user?.generalRole ?? "") ||
+    !session?.user?.accessToken
+  ) {
+    //Redirect to user profile or company depending on user role
+    redirect("/");
+  }
   return (
     //Build the Profile layout with the Header - for candidate profile
     <div>

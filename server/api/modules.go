@@ -2,6 +2,8 @@ package api
 
 import (
 	"server/api/auth"
+	"server/api/companies"
+	"server/api/emails"
 	"server/api/files"
 	"server/api/profiles"
 	"server/api/users"
@@ -15,4 +17,6 @@ var Modules = fx.Options(
 	fx.Provide(auth.NewAuthModule),
 	fx.Provide(profiles.NewProfilesModule),
 	fx.Provide(files.NewFilesModule),
+	fx.Provide(emails.NewEmailsModule),
+	fx.Provide(companies.NewCompanyModule),
 )

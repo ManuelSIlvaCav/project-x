@@ -25,6 +25,7 @@ export default function LoginComponent(props: Props) {
       const res = await signIn("credentials", {
         email: e.currentTarget.email.value,
         password: e.currentTarget.password.value,
+        general_role: "candidate",
         redirect: false,
       });
       if (res?.error) {
