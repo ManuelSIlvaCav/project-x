@@ -13,4 +13,11 @@ type (
 		UpdatedAt      time.Time `json:"updatedAt" bson:"updatedAt,omitempty"`
 		DeletedAt      time.Time `json:"deletedAt" bson:"deletedAt,omitempty"`
 	}
+
+	CompanySignupInput struct {
+		CompanyName    string `json:"company_name" validate:"required"`
+		CompanyWebsite string `json:"company_website" validate:"required"`
+		AdminEmail     string `json:"admin_email" validate:"required,email"`
+		Password       string `json:"password" validate:"required,min=6,max=20" errormgs:"Password is required and must be between 6 and 20 characters"`
+	}
 )

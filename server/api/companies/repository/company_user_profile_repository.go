@@ -10,7 +10,7 @@ import (
 
 type (
 	CompanyUserProfileRepository interface {
-		CreateCompanyUserProfile(companyId string, userId string, companyUserProfile companies_models.CompanyUserProfile) (string, error)
+		CreateCompanyUserProfile(ctx context.Context, companyId string, userId string, companyUserProfile companies_models.CompanyUserProfile) (string, error)
 	}
 )
 
@@ -22,8 +22,10 @@ func NewCompanyUserProfileRepository(container *container.Container) *companyUse
 	return &companyUserProfileRepository{container: container}
 }
 
-func (repo *companyUserProfileRepository) CreateCompanyUserProfile(companyId string, userId string, companyUserProfile companies_models.CompanyUserProfile) (string, error) {
-	ctx := context.Background()
+func (repo *companyUserProfileRepository) CreateCompanyUserProfile(ctx context.Context, companyId string, userId string, companyUserProfile companies_models.CompanyUserProfile) (string, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
 	companyUserProfileCollection := (repo.container.GetMongoDB()).GetCollection("company_user_profiles")
 

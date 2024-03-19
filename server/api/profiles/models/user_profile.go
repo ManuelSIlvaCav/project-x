@@ -54,10 +54,11 @@ type (
 	}
 
 	Education struct {
-		SchoolName  string `json:"schoolName" bson:"schoolName"`
-		StartDate   string `json:"startDate" bson:"startDate"`
-		EndDate     string `json:"endDate" bson:"endDate"`
-		Description string `json:"description" bson:"description"`
+		ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+		SchoolName    string             `json:"schoolName" bson:"schoolName"`
+		StartDateYear string             `json:"startDate" bson:"startDate"`
+		EndDateYear   string             `json:"endDate" bson:"endDate"`
+		Description   string             `json:"description" bson:"description"`
 	}
 
 	Links struct {

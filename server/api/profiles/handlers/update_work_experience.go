@@ -31,7 +31,7 @@ type (
 	}
 
 	WorkExperienceInput struct {
-		UserId string `param:"user_id" validate:"required"`
+		ProfileId string `param:"profile_id" validate:"required"`
 		//ID allows to update a specific work experience for that user
 		ID              string                              `json:"id,omitempty"`
 		WorkExperience  *WorkExperienceOverviewInput        `json:"work_experience_overview,omitempty"`
@@ -83,7 +83,7 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 
 		logger.Info("Saving work experience", "data", newWorkExperience)
 
-		result, err := userProfileRepository.UpdateUserProfileWorkExperience(workExperienceData.UserId, workExperienceData.ID, newWorkExperience)
+		result, err := userProfileRepository.UpdateUserProfileWorkExperience(workExperienceData.ProfileId, workExperienceData.ID, newWorkExperience)
 
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})

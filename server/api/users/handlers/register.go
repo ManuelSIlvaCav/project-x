@@ -23,8 +23,9 @@ type UserInput struct {
 
 func Register(container *container.Container, userRepository repository.UserRepository, profilesModule *profiles.ProfilesModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		newctx := context.Background()
 		logger := container.GetLogger()
-		_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(newctx, 10*time.Second)
 
 		var user UserInput
 		defer cancel()
@@ -49,7 +50,7 @@ func Register(container *container.Container, userRepository repository.UserRepo
 		}
 		logger.Info("Creating user", "user", newUser)
 
-		userId, err := userRepository.CreateUser(newUser)
+		userId, err := userRepository.CreateUser(ctx, newUser)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": err.Error()})

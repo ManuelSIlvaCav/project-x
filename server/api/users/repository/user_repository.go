@@ -14,7 +14,7 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(user user_models.User) (string, error)
+	CreateUser(ctx context.Context, user user_models.User) (string, error)
 	GetUser(email string, filter map[string]interface{}) (*user_models.User, error)
 	GetUserByID(id string) (*user_models.User, error)
 
@@ -36,8 +36,11 @@ func NewUserRepository(container *container.Container) *userRepository {
 	return &userRepository{container: container}
 }
 
-func (repo *userRepository) CreateUser(user user_models.User) (string, error) {
-	ctx := context.Background()
+func (repo *userRepository) CreateUser(ctx context.Context, user user_models.User) (string, error) {
+
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 
 	hashedPassword, err := passwords.Hash(user.Password)

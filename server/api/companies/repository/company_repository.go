@@ -9,7 +9,7 @@ import (
 )
 
 type CompanyRepository interface {
-	CreateCompany(company companies_models.Company) (string, error)
+	CreateCompany(ctx context.Context, company companies_models.Company) (string, error)
 }
 
 type companyRepository struct {
@@ -20,17 +20,12 @@ func NewCompanyRepository(container *container.Container) *companyRepository {
 	return &companyRepository{container: container}
 }
 
-func (repo *companyRepository) CreateCompany(company companies_models.Company) (string, error) {
-	ctx := context.Background()
+func (repo *companyRepository) CreateCompany(ctx context.Context, company companies_models.Company) (string, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	companyCollection := (repo.container.GetMongoDB()).GetCollection("companies")
-
-	// hashedPassword, err := passwords.Hash(company.Password)
-	// if err != nil {
-	// 	return "", err
-
-	// }
-
-	// company.Password = hashedPassword
 
 	result, err := companyCollection.InsertOne(ctx, company)
 

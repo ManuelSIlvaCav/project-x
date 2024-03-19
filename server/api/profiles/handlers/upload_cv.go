@@ -37,7 +37,7 @@ func UploadCV(container *container.Container, fileModule *files_module.FilesModu
 		src, openErr := file.Open()
 
 		if openErr != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": openErr.Error()})
 		}
 
 		defer src.Close()

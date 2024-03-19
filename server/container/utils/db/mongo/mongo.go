@@ -16,6 +16,7 @@ type MongoDB interface {
 	GetClient() *mongo.Client
 	GetCollection(collection string) *mongo.Collection
 	PopulateIndexes(collection string, indexes []mongo.IndexModel) error
+	WithTransaction(execute func(sc mongo.SessionContext) error) bool
 }
 
 type mongoDB struct {
@@ -72,6 +73,29 @@ func (db *mongoDB) GetClient() *mongo.Client {
 
 func (db *mongoDB) GetCollection(collection string) *mongo.Collection {
 	return db.db.Database(db.mainDatabaseName).Collection(collection)
+}
+
+func (db *mongoDB) WithTransaction(execute func(sc mongo.SessionContext) error) bool {
+	ctx := context.Background()
+	session, err := db.db.StartSession()
+
+	if err != nil {
+		db.logger.Error("Error starting session", "error", err)
+		return false
+	}
+
+	if err = session.StartTransaction(); err != nil {
+		db.logger.Error("Error starting transaction", "error", err)
+		return false
+	}
+
+	if err = mongo.WithSession(ctx, session, execute); err != nil {
+		db.logger.Error("Error with session", "error", err)
+		return false
+	}
+
+	session.EndSession(ctx)
+	return true
 }
 
 func (db *mongoDB) PopulateIndexes(collection string, indexes []mongo.IndexModel) error {

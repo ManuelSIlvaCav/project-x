@@ -16,12 +16,14 @@ type UserProfilesRepository interface {
 	// SaveProfile saves a profile in the DB
 	CreateUserProfile(newProfile profiles_models.UserProfile) (string, error)
 	// GetProfile gets a profile from the DB
-	GetUserProfile(userId string) (*profiles_models.UserProfile, error)
+	GetUserProfile(profileId string) (*profiles_models.UserProfile, error)
 	// UpdateUserProfileWorkExperience updates the work experience of a user
-	UpdateUserProfileWorkExperience(userId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error)
+	UpdateUserProfileWorkExperience(profileId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error)
+
+	UpdateUserProfileEducation(profileId string, educationId string, education profiles_models.Education) (*profiles_models.UserProfile, error)
 
 	// UpdateUserProfileEducation updates the education of a user
-	UpdateProfileCV(userId string, fileId string) (bool, error)
+	UpdateProfileCV(profileId string, fileId string) (bool, error)
 }
 
 type userProfilesRepository struct {
@@ -147,13 +149,13 @@ func (repo *userProfilesRepository) UpdateProfileCV(userId string, fileId string
 	return true, nil
 }
 
-func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(userId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error) {
+func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(profileId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error) {
 	logger := repo.container.GetLogger()
 	ctx := context.Background()
 
 	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
 
-	objectUserID, userIdObjectError := primitive.ObjectIDFromHex(userId)
+	objectProfileId, userIdObjectError := primitive.ObjectIDFromHex(profileId)
 
 	if userIdObjectError != nil {
 		return nil, errors.New("could not parse user id")
@@ -170,7 +172,7 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(userId strin
 			return nil, errors.New("could not parse work experience id")
 		}
 
-		filter = bson.D{{Key: "userId", Value: objectUserID}, {Key: "workExperiences._id", Value: objectWorkExperienceID}}
+		filter = bson.D{{Key: "_id", Value: objectProfileId}, {Key: "workExperiences._id", Value: objectWorkExperienceID}}
 
 		setData := bson.M{}
 
@@ -200,7 +202,7 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(userId strin
 
 	} else {
 		//We need to create a new work experience
-		filter = bson.D{{Key: "userId", Value: objectUserID}}
+		filter = bson.D{{Key: "_id", Value: objectProfileId}}
 		workExperience.ID = primitive.NewObjectID()
 		update = bson.M{"$push": bson.M{"workExperiences": workExperience}}
 	}
@@ -213,6 +215,74 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(userId strin
 	err := userCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedDoc)
 
 	logger.Warn("Updated work experience", "updatedDoc", updatedDoc, "err", err)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("could not find user profile")
+		}
+		return nil, err
+	}
+
+	return &updatedDoc, nil
+}
+
+func (repo *userProfilesRepository) UpdateUserProfileEducation(profileId string, educationId string, education profiles_models.Education) (*profiles_models.UserProfile, error) {
+	logger := repo.container.GetLogger()
+	ctx := context.Background()
+
+	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
+
+	objectProfileID, userIdObjectError := primitive.ObjectIDFromHex(profileId)
+
+	if userIdObjectError != nil {
+		return nil, errors.New("could not parse user id")
+	}
+
+	var filter bson.D
+	var update bson.M
+
+	if educationId != "" {
+		//We need to update the work experience
+		objectEducationId, err := primitive.ObjectIDFromHex(educationId)
+
+		if err != nil {
+			return nil, errors.New("could not parse work experience id")
+		}
+
+		filter = bson.D{{Key: "_id", Value: objectProfileID}, {Key: "education._id", Value: objectEducationId}}
+
+		setData := bson.M{}
+
+		if education.SchoolName != "" {
+			setData["education.$.schoolName"] = education.SchoolName
+		}
+		if education.StartDateYear != "" {
+			setData["education.$.startDateYear"] = education.StartDateYear
+		}
+		if education.EndDateYear != "" {
+			setData["education.$.endDateYear"] = education.EndDateYear
+		}
+		if education.Description != "" {
+			setData["education.$.description"] = education.Description
+		}
+
+		update = bson.M{"$set": setData}
+
+	} else {
+		//We need to create a new work experience
+		filter = bson.D{{Key: "_id", Value: objectProfileID}}
+		education.ID = primitive.NewObjectID()
+		update = bson.M{"$push": bson.M{"education": education}}
+	}
+
+	logger.Info("Updating Education experience", "filter", filter, "update", update)
+
+	var updatedDoc profiles_models.UserProfile
+	opts := &options.FindOneAndUpdateOptions{}
+	opts.SetReturnDocument(options.After)
+	err := userCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedDoc)
+
+	logger.Warn("Updated Education experience", "updatedDoc", updatedDoc, "err", err)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {

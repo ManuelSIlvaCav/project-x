@@ -18,7 +18,7 @@ func GetProfile(container *container.Container, userProfileRepository profiles_r
 		_, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
 
-		userID := c.Param("user_id")
+		userID := c.Param("profile_id")
 
 		userProfile, err := userProfileRepository.GetUserProfile(userID)
 
