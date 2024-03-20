@@ -115,21 +115,6 @@ export default function JobPostingForm() {
               title="Finally what you offer"
               description="Please include company benefits, salary and any other perks"
             />
-
-            <div>
-              <div className="">
-                <DescriptionInput
-                  label="Role description"
-                  name="role_description"
-                />
-              </div>
-              <div className="">
-                <DescriptionInput
-                  label="Role requirements"
-                  name="role_requirements"
-                />
-              </div>
-            </div>
           </div>
 
           <Button className="mt-4" type="submit">
