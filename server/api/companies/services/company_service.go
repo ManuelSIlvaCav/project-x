@@ -40,6 +40,7 @@ func NewCompanyService(
 func (service *companyService) CreateCompany(companyInput companies_models.CompanySignupInput) (string, error) {
 	//Initiate the transaction
 	ctx := context.Background()
+	nowTime := time.Now()
 
 	//We create the user
 	newUser := user_models.User{
@@ -48,7 +49,7 @@ func (service *companyService) CreateCompany(companyInput companies_models.Compa
 		Email:       companyInput.AdminEmail,
 		Password:    companyInput.Password,
 		GeneralRole: "company",
-		CreatedAt:   time.Now(),
+		CreatedAt:   nowTime,
 	}
 	userId, err := service.usersModule.UserRepository.CreateUser(ctx, newUser)
 
@@ -57,7 +58,6 @@ func (service *companyService) CreateCompany(companyInput companies_models.Compa
 	}
 
 	//We create the company and then the user profile
-	nowTime := time.Now()
 
 	newCompany := companies_models.Company{
 		CompanyName:    companyInput.CompanyName,

@@ -37,9 +37,7 @@ func CreateEmailTemplate(container *container.Container, emailTemplateRepository
 
 		validator := container.GetCustomValidator()
 
-		structToValidate := &createEmailTemplateInput
-
-		if validationErrs := validator.ValidateStruct(*structToValidate); len(validationErrs) > 0 {
+		if validationErrs := validator.ValidateStruct(createEmailTemplateInput); len(validationErrs) > 0 {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs})
 		}
 
@@ -57,8 +55,6 @@ func CreateEmailTemplate(container *container.Container, emailTemplateRepository
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
-
-		time.Sleep(2 * time.Second)
 
 		return c.JSON(http.StatusOK, &echo.Map{"message": "success", "data": result})
 	}

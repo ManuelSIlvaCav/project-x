@@ -23,7 +23,8 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	container *container.Container
+	container  *container.Container
+	collection *mongo.Collection
 }
 
 func NewUserRepository(container *container.Container) *userRepository {
@@ -33,7 +34,7 @@ func NewUserRepository(container *container.Container) *userRepository {
 		Options: options.Index().SetUnique(true),
 	})
 	container.GetMongoDB().PopulateIndexes("users", indexes)
-	return &userRepository{container: container}
+	return &userRepository{container: container, collection: container.GetMongoDB().GetCollection("users")}
 }
 
 func (repo *userRepository) CreateUser(ctx context.Context, user user_models.User) (string, error) {
@@ -41,7 +42,6 @@ func (repo *userRepository) CreateUser(ctx context.Context, user user_models.Use
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 
 	hashedPassword, err := passwords.Hash(user.Password)
 	if err != nil {
@@ -50,7 +50,9 @@ func (repo *userRepository) CreateUser(ctx context.Context, user user_models.Use
 	}
 	user.Password = hashedPassword
 
-	result, err := userCollection.InsertOne(ctx, user)
+	opts := &options.InsertOneOptions{}
+
+	result, err := repo.collection.InsertOne(ctx, user, opts)
 
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
@@ -65,8 +67,8 @@ func (repo *userRepository) CreateUser(ctx context.Context, user user_models.Use
 
 func (repo *userRepository) GetUser(email string, filter map[string]interface{}) (*user_models.User, error) {
 	ctx := context.Background()
+	logger := repo.container.GetLogger()
 	//We hash the password first to test
-	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 
 	customFilter := bson.D{
 		{Key: "email", Value: email},
@@ -74,11 +76,14 @@ func (repo *userRepository) GetUser(email string, filter map[string]interface{})
 		{Key: "deleted_at", Value: nil},
 	}
 
-	user := userCollection.FindOne(ctx, customFilter)
-
 	var userFound user_models.User
 
-	if decodeError := user.Decode(&userFound); decodeError != nil {
+	opts := &options.FindOneOptions{}
+
+	userResult := repo.collection.FindOne(ctx, customFilter, opts)
+
+	if decodeError := userResult.Decode(&userFound); decodeError != nil {
+		logger.Error("Error decoding user", "error", decodeError)
 		return nil, decodeError
 	}
 	//If we don't find it, we return an error
@@ -103,12 +108,12 @@ func (repo *userRepository) LoginUser(email string, password string, filter map[
 
 // Get user by id
 func (repo *userRepository) GetUserByID(id string) (*user_models.User, error) {
+
 	ctx := context.Background()
-	userCollection := (repo.container.GetMongoDB()).GetCollection("users")
 	objectID, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectID}}
 
-	user := userCollection.FindOne(ctx, filter)
+	user := repo.collection.FindOne(ctx, filter)
 
 	var userFound user_models.User
 	err := user.Decode(&userFound)

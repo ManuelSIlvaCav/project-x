@@ -21,7 +21,8 @@ func NewUserModule(container *container.Container,
 	routes := []interfaces.Route{}
 	routes = append(routes,
 		router.BuildRoute("GET", "", handlers.Users(container, userRepository)),
-		router.BuildRoute("POST", "/register", handlers.Register(container, userRepository, profilesModule)))
+		router.BuildRoute("POST", "/register", handlers.Register(container, userRepository, profilesModule)),
+	)
 
 	userModule := &UserModule{
 		UserRepository: userRepository,

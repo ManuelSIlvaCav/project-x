@@ -39,8 +39,7 @@ func UpdateEducation(container *container.Container, userProfileRepository profi
 
 		validator := container.GetCustomValidator()
 
-		structToValidate := &educationData
-		if validationErrs := validator.ValidateStruct(*structToValidate); len(validationErrs) > 0 {
+		if validationErrs := validator.ValidateStruct(educationData); len(validationErrs) > 0 {
 			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs})
 		}
 

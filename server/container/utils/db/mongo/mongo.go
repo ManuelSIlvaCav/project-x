@@ -17,6 +17,7 @@ type MongoDB interface {
 	GetCollection(collection string) *mongo.Collection
 	PopulateIndexes(collection string, indexes []mongo.IndexModel) error
 	WithTransaction(execute func(sc mongo.SessionContext) error) bool
+	MongoPing() error
 }
 
 type mongoDB struct {
@@ -31,7 +32,7 @@ func Init(config config.Config, logger logger.Logger) (*mongo.Client, error) {
 	logger.Info(fmt.Sprintf("Connecting to %s\n", config.MongoDB.MongoUri))
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(config.MongoDB.MongoUri).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(config.MongoDB.MongoUri).SetServerAPIOptions(serverAPI).SetMaxPoolSize(10)
 
 	if config.IsProd() {
 		opts.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
@@ -73,6 +74,10 @@ func (db *mongoDB) GetClient() *mongo.Client {
 
 func (db *mongoDB) GetCollection(collection string) *mongo.Collection {
 	return db.db.Database(db.mainDatabaseName).Collection(collection)
+}
+
+func (db *mongoDB) MongoPing() error {
+	return db.db.Ping(context.TODO(), nil)
 }
 
 func (db *mongoDB) WithTransaction(execute func(sc mongo.SessionContext) error) bool {

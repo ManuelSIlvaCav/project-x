@@ -56,7 +56,7 @@ func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_mod
 
 	logger := repo.container.GetLogger()
 	ctx := context.TODO()
-	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
+	userCollection := repo.container.GetMongoDB().GetCollection("user_profiles")
 	objectID, _ := primitive.ObjectIDFromHex(userId)
 
 	matchStage := bson.D{

@@ -15,7 +15,8 @@ type EmailsModule struct {
 func NewEmailsModule(container *container.Container, router *router.Router) *EmailsModule {
 	emailTemplateRepository := email_repository.NewEmailRepository(container)
 
-	emailsModule := &EmailsModule{emailTemplateRepository: emailTemplateRepository}
+	emailsModule := &EmailsModule{
+		emailTemplateRepository: emailTemplateRepository}
 
 	routes := []interfaces.Route{}
 

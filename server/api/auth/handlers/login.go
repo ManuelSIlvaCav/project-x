@@ -20,17 +20,16 @@ type (
 
 func Login(container *container.Container, userModule *users.UserModule) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		validator := container.GetCustomValidator()
 
 		var user UserLogin
 
 		if err := c.Bind(&user); err != nil {
-
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		structToValidate := &user
-		if validationErrs := validator.ValidateStruct(*structToValidate); len(validationErrs) > 0 {
+		validator := container.GetCustomValidator()
+
+		if validationErrs := validator.ValidateStruct(user); len(validationErrs) > 0 {
 
 			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs})
 		}
@@ -42,7 +41,7 @@ func Login(container *container.Container, userModule *users.UserModule) echo.Ha
 			map[string]interface{}{"generalRole": user.GeneralRole})
 
 		if err != nil || userFound == nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Invalid email or password"})
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Invalid email or password2"})
 		}
 
 		// Create token

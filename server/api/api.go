@@ -11,8 +11,6 @@ import (
 )
 
 type Api struct {
-	userModule *users.UserModule
-	authModule *auth.AuthModule
 }
 
 func NewAPI(container *container.Container, router *router.Router,
@@ -23,9 +21,6 @@ func NewAPI(container *container.Container, router *router.Router,
 	companyModule *companies.CompanyModule,
 ) *Api {
 
-	apiObj := &Api{
-		userModule: usersModule,
-		authModule: authModule,
-	}
+	apiObj := &Api{}
 	return apiObj
 }

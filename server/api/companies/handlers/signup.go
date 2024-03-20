@@ -29,9 +29,8 @@ func Signup(
 		}
 
 		validator := container.GetCustomValidator()
-		structToValidate := &companyInput
 
-		if validationErrs := validator.ValidateStruct(*structToValidate); len(validationErrs) > 0 {
+		if validationErrs := validator.ValidateStruct(companyInput); len(validationErrs) > 0 {
 
 			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs})
 		}
