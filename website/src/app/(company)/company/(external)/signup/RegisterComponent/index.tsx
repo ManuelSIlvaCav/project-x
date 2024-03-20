@@ -8,8 +8,6 @@ import { useFormState } from "react-dom";
 export default function RegisterComponent() {
   const [state, dispatch] = useFormState(companySignup, null);
 
-  console.log({ state });
-
   return (
     <form action={dispatch}>
       <div className="flex flex-col gap-6">

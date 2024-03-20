@@ -9,17 +9,17 @@ import (
 type (
 	UserProfile struct {
 		ID     string              `json:"id" bson:"_id,omitempty"`
-		UserID *primitive.ObjectID `bson:"userId" json:"userId"`
+		UserID *primitive.ObjectID `bson:"userId" json:"user_id"`
 
-		CvFileId *primitive.ObjectID `json:"cvFileId,omitempty" bson:"cvFileId,omitempty"`
+		CvFileId *primitive.ObjectID `json:"cv_file_id,omitempty" bson:"cvFileId,omitempty"`
 
 		CV *files_model.File `json:"cv,omitempty" bson:"cv,omitempty"` // CV file should be used as ref when using lookup in mongo
 
 		//Contact information
-		ContactInformation *ContactInformation `json:"contactInformation,omitempty" bson:"contactInformation,omitempty"`
+		ContactInformation *ContactInformation `json:"contat_information,omitempty" bson:"contactInformation,omitempty"`
 
 		//Work experience
-		WorkExperiences []*WorkExperience `json:"workExperiences,omitempty" bson:"workExperiences"`
+		WorkExperiences []*WorkExperience `json:"work_experiences,omitempty" bson:"workExperiences"`
 
 		//Education
 		Education []*Education `json:"education,omitempty" bson:"education,omitempty"`
@@ -39,12 +39,12 @@ type (
 		ID                 primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 		Company            string             `json:"company" bson:"company"`
 		Role               string             `json:"role" bson:"role"`
-		StartDateMonth     string             `json:"startDateMonth" bson:"startDateMonth"`
-		StartDateYear      string             `json:"startDateYear" bson:"startDateYear"`
-		EndDateYear        string             `json:"endDateYear" bson:"endDateYear"`
-		EndDateMonth       string             `json:"endDateMonth" bson:"endDateMonth"`
-		CompanyDescription string             `json:"companyDescription,omitempty" bson:"companyDescription,omitempty"`
-		CompanyWebsite     string             `json:"companyWebsite,omitempty" bson:"companyWebsite,omitempty"`
+		StartDateMonth     string             `json:"start_date_month" bson:"startDateMonth"`
+		StartDateYear      string             `json:"start_date_year" bson:"startDateYear"`
+		EndDateYear        string             `json:"end_date_year" bson:"endDateYear"`
+		EndDateMonth       string             `json:"end_date_month" bson:"endDateMonth"`
+		CompanyDescription string             `json:"company_description,omitempty" bson:"companyDescription,omitempty"`
+		CompanyWebsite     string             `json:"company_website,omitempty" bson:"companyWebsite,omitempty"`
 		Descriptions       []*Description     `json:"descriptions,omitempty" bson:"descriptions,omitempty"`
 	}
 
@@ -55,9 +55,9 @@ type (
 
 	Education struct {
 		ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-		SchoolName    string             `json:"schoolName" bson:"schoolName"`
-		StartDateYear string             `json:"startDate" bson:"startDate"`
-		EndDateYear   string             `json:"endDate" bson:"endDate"`
+		SchoolName    string             `json:"school_name" bson:"schoolName"`
+		StartDateYear string             `json:"start_date_year" bson:"startDateYear"`
+		EndDateYear   string             `json:"end_date_year" bson:"endDateYear"`
 		Description   string             `json:"description" bson:"description"`
 	}
 

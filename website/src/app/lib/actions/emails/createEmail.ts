@@ -18,8 +18,6 @@ export default async function createEmail(prevState: any, formData: FormData) {
       html_content: formData.get("htmlContent") as string,
     };
 
-    console.log({ body });
-
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${jwtToken}`,

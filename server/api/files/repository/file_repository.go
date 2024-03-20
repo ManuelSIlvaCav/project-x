@@ -5,7 +5,9 @@ import (
 	files_model "server/api/files/models"
 	"server/container"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type FilesRepository interface {
@@ -17,6 +19,13 @@ type filesRepository struct {
 }
 
 func NewFilesRepository(container *container.Container) *filesRepository {
+	indexes := []mongo.IndexModel{}
+	indexes = append(indexes, mongo.IndexModel{
+		Keys: bson.D{{Key: "name", Value: 1}},
+	}, mongo.IndexModel{
+		Keys: bson.D{{Key: "url", Value: 1}},
+	})
+	container.GetMongoDB().PopulateIndexes("files", indexes)
 	return &filesRepository{container: container}
 }
 

@@ -1,6 +1,6 @@
 import Card from "@/components/Card";
 import { monthValueName } from "@/utils/months";
-import { WorkExperience } from ".";
+import { WorkExperience } from "../../interfaces/Profile";
 
 export default function WorkExperiencesCard({
   workExperience,
@@ -10,10 +10,10 @@ export default function WorkExperiencesCard({
   const {
     role,
     company,
-    startDateMonth,
-    startDateYear,
-    endDateMonth,
-    endDateYear,
+    start_date_month,
+    start_date_year,
+    end_date_year,
+    end_date_month,
     descriptions,
   } = workExperience;
 
@@ -34,9 +34,9 @@ export default function WorkExperiencesCard({
           </div>
           <div>
             <span className="font-light text-sm">{`${dateFormater(
-              startDateMonth,
-              startDateYear
-            )} - ${dateFormater(endDateMonth, endDateYear)}`}</span>
+              start_date_month,
+              start_date_year
+            )} - ${dateFormater(end_date_month, end_date_year)}`}</span>
           </div>
           <div>
             <ul>

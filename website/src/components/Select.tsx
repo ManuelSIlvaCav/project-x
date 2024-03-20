@@ -12,7 +12,7 @@ export default function Select({
   ...props
 }: Omit<React.ComponentPropsWithoutRef<"input">, "id"> & {
   errorMessage?: string | null;
-  label: string;
+  label?: string;
   name: string;
   options: { id: string; label: string }[];
 }) {

@@ -12,6 +12,7 @@ import (
 
 func GetProfile(container *container.Container, userProfileRepository profiles_repository.UserProfilesRepository) echo.HandlerFunc {
 	return func(c echo.Context) error {
+
 		ctx := context.Background()
 		logger := container.GetLogger()
 

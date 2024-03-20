@@ -1,19 +1,18 @@
-import getProfile from "@/app/lib/actions/getProfile";
-import { WorkExperience } from "../../WorkExperience/WorkExperiences";
-import WorkExperiencesCard from "../../WorkExperience/WorkExperiences/WorkExperiencesCard";
+import { Education, Profile } from "../../interfaces/Profile";
+import EducationCard from "./EducationCard";
 
-export default async function PastEducation() {
-  const profile = await getProfile();
+type Props = {
+  profile: Profile;
+};
+
+export default async function PastEducation(props: Props) {
+  const { profile } = props;
+
   return (
     <>
       <div className="flex flex-col gap-4">
-        {profile?.workExperiences?.map((workExperience: WorkExperience) => {
-          return (
-            <WorkExperiencesCard
-              key={workExperience.id}
-              workExperience={workExperience}
-            />
-          );
+        {profile?.education?.map((education: Education) => {
+          return <EducationCard key={education.id} education={education} />;
         })}
       </div>
     </>

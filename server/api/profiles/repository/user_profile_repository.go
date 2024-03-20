@@ -35,6 +35,8 @@ func NewUserProfilesRepository(container *container.Container) *userProfilesRepo
 	indexes := []mongo.IndexModel{}
 	indexes = append(indexes, mongo.IndexModel{
 		Keys: bson.D{{Key: "userId", Value: 1}},
+	}, mongo.IndexModel{
+		Keys: bson.D{{Key: "cvFileId", Value: 1}},
 	})
 	container.GetMongoDB().PopulateIndexes("user_profiles", indexes)
 	return &userProfilesRepository{container}
@@ -51,6 +53,7 @@ func (repo *userProfilesRepository) CreateUserProfile(newProfile profiles_models
 }
 
 func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_models.UserProfile, error) {
+
 	logger := repo.container.GetLogger()
 	ctx := context.TODO()
 	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
@@ -90,8 +93,6 @@ func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_mod
 		return nil, err
 	}
 
-	logger.Info("Aggr result", "profile", resultProfile)
-
 	if len(resultProfile) == 0 {
 		return nil, errors.New("no profile found for user")
 	}
@@ -105,20 +106,6 @@ func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_mod
 
 	return userProfile, nil
 
-	// filter := bson.D{{Key: "userId", Value: objectID}}
-	// userProfile := userCollection.FindOne(ctx, filter)
-
-	// var userProfileFound profiles_models.UserProfile
-	// err = userProfile.Decode(&userProfileFound)
-
-	// if err != nil {
-	// 	if err == mongo.ErrNoDocuments {
-	// 		return nil, nil
-	// 	}
-	// 	return nil, err
-	// }
-
-	// return &userProfileFound, nil
 }
 
 func (repo *userProfilesRepository) UpdateProfileCV(userId string, fileId string) (bool, error) {
@@ -210,8 +197,10 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(profileId st
 	logger.Info("Updating work experience", "filter", filter, "update", update)
 
 	var updatedDoc profiles_models.UserProfile
+
 	opts := &options.FindOneAndUpdateOptions{}
 	opts.SetReturnDocument(options.After)
+
 	err := userCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedDoc)
 
 	logger.Warn("Updated work experience", "updatedDoc", updatedDoc, "err", err)

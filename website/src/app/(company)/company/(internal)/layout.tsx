@@ -19,7 +19,6 @@ export default async function CompanyLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
-  console.log({ session });
 
   if (session?.user?.generalRole !== "company" || !session?.user?.accessToken) {
     //Redirect to user profile or company depending on user role

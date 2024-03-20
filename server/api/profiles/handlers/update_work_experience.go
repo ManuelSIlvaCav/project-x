@@ -55,14 +55,14 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
 		}
 
-		validate := container.GetCustomValidator().GetValidator()
+		validator := container.GetCustomValidator()
 
+		structToValidate := &workExperienceData
 		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&workExperienceData); validationErr != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": validationErr.Error()})
-		}
+		if validationErrs := validator.ValidateStruct(*structToValidate); len(validationErrs) > 0 {
 
-		logger.Info("Updating work experience", "data", workExperienceData)
+			return c.JSON(http.StatusBadRequest, &echo.Map{"errors": validationErrs})
+		}
 
 		newWorkExperience := profiles_models.WorkExperience{}
 

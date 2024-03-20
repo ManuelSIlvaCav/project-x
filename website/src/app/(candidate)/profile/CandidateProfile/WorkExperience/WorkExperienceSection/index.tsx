@@ -1,16 +1,27 @@
 "use client";
 import CircularPlusButton from "@/components/CircularPlusButton";
 import { useState } from "react";
-import WorkExperienceWizard from "../WorkExperienceWizard";
+import { Profile } from "../../interfaces/Profile";
+import WorkExperienceWizard from "./WorkExperienceWizard";
 import { WorkExperienceWizardContext } from "./context";
 
-export default function WorkExperienceSection() {
+type Props = {
+  profile: Profile;
+};
+
+export default function WorkExperienceSection(props: Props) {
   const [quickFormOpen, setQuickFormOpen] = useState(false);
-  const [workExperienceId, setWorkExperienceId] = useState<string | null>(null);
+  const [workExperienceId, setWorkExperienceId] = useState<
+    string | undefined
+  >();
+
   return (
     <>
       <WorkExperienceWizardContext.Provider
-        value={{ workExperienceId: workExperienceId }}
+        value={{
+          workExperienceId: workExperienceId,
+          profileId: props.profile?.id,
+        }}
       >
         <div className="flex justify-between">
           <div className="pb-2">

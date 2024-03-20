@@ -1,16 +1,14 @@
-import Skeleton from "@/components/Dashboard/Skeleton";
-import { Suspense } from "react";
+import getProfile from "@/app/lib/actions/getProfile";
 import EducationSection from "./EducationSection";
 import PastEducation from "./PastEducation";
 
-export default function Education() {
+export default async function Education() {
+  const profile = await getProfile();
   return (
     <>
       <div className="flex flex-col gap-8">
-        <EducationSection />
-        <Suspense fallback={<Skeleton />}>
-          <PastEducation />
-        </Suspense>
+        <EducationSection profile={profile} />
+        <PastEducation profile={profile} />
       </div>
     </>
   );

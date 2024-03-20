@@ -41,12 +41,15 @@ func getNewSession(config config.Config) *session.Session {
 
 	s3Session := session.Must(
 		session.NewSession(&aws.Config{
-			Region: aws.String(region),
+			Region:     aws.String(region),
+			DisableSSL: aws.Bool(true),
 			Credentials: credentials.NewStaticCredentials(
 				awsAccessKey,
 				awsSecretKey,
 				""),
 		}))
+
+	session.NewSessionWithOptions(session.Options{})
 
 	return s3Session
 
