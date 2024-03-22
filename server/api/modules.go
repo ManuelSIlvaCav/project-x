@@ -5,6 +5,7 @@ import (
 	"server/api/companies"
 	"server/api/emails"
 	"server/api/files"
+	"server/api/job_invites"
 	"server/api/profiles"
 	"server/api/users"
 
@@ -19,4 +20,5 @@ var Modules = fx.Options(
 	fx.Provide(files.NewFilesModule),
 	fx.Provide(emails.NewEmailsModule),
 	fx.Provide(companies.NewCompanyModule),
+	fx.Provide(job_invites.NewJobInvitesModule),
 )

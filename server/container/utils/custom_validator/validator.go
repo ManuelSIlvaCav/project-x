@@ -96,8 +96,9 @@ func errorTagFunc(obj interface{}, snp string, fieldname, actualTag string) *Val
 				if tag == "" || tag == "required" {
 					tag = fieldname
 				}
+
 				//return fmt.Errorf("%s: %s", tag, customMessage) //Here is where we return the error, we could abstract and return a custom Error
-				return &ValidationError{Field: tag, Message: customMessage}
+				return &ValidationError{Field: fieldname, Message: customMessage}
 			}
 			return nil
 		}

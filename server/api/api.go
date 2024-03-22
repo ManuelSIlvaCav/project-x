@@ -4,6 +4,7 @@ import (
 	"server/api/auth"
 	"server/api/companies"
 	"server/api/emails"
+	"server/api/job_invites"
 	"server/api/profiles"
 	"server/api/users"
 	"server/container"
@@ -19,6 +20,7 @@ func NewAPI(container *container.Container, router *router.Router,
 	profilesModule *profiles.ProfilesModule,
 	emailsModule *emails.EmailsModule,
 	companyModule *companies.CompanyModule,
+	jobInvitesModule *job_invites.JobInvitesModule,
 ) *Api {
 
 	apiObj := &Api{}
