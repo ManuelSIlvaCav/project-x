@@ -54,9 +54,12 @@ const jobInviteList = [
 ];
 
 export default function JobsList() {
+  //We call all the company joblistings here and pass them to the StackedList component
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Your Job postings</h1>
+      <div className="pl-5">
+        <h1 className="text-2xl font-bold">Your Job postings</h1>
+      </div>
       <StackedList options={jobInviteList} href="/jobs/" />
     </div>
   );

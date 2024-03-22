@@ -1,4 +1,5 @@
-import StackedList from "@/components/StackedList";
+import getCandidateRecommendation from "@/app/lib/actions/company/getCandidateRecommendations";
+import Table from "@/components/Table";
 
 const candidatesProfiles = [
   {
@@ -34,7 +35,14 @@ const candidatesProfiles = [
 export default function CandidateList() {
   return (
     <div>
-      <StackedList options={candidatesProfiles} href="/profiles" />
+      <Table
+        title={""}
+        description={""}
+        topRightButton={undefined}
+        columns={[]}
+        query={getCandidateRecommendation}
+      />
+      {/* <StackedList options={candidatesProfiles} href="/profiles" /> */}
     </div>
   );
 }

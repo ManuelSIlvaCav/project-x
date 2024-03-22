@@ -74,7 +74,7 @@ export default function MultiRangeSlider({
           value={minVal}
           step={step}
           onChange={(event) => {
-            const value = Math.min(Number(event.target.value), maxVal - 1);
+            const value = Math.min(Number(event.target.value), maxVal);
             setMinVal(value);
             minValRef.current = value;
           }}
@@ -88,7 +88,7 @@ export default function MultiRangeSlider({
           step={step}
           value={maxVal}
           onChange={(event) => {
-            const value = Math.max(Number(event.target.value), minVal + 1);
+            const value = Math.max(Number(event.target.value), minVal);
             setMaxVal(value);
             maxValRef.current = value;
           }}

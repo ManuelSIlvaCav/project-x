@@ -1,0 +1,42 @@
+{
+  "value": {
+    "description": "London, ON, Canada",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 0
+      }
+    ],
+    "place_id": "ChIJC5uNqA7yLogRlWsFmmnXxyg",
+    "reference": "ChIJC5uNqA7yLogRlWsFmmnXxyg",
+    "structured_formatting": {
+      "main_text": "London",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 0
+        }
+      ],
+      "secondary_text": "ON, Canada"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "London"
+      },
+      {
+        "offset": 8,
+        "value": "ON"
+      },
+      {
+        "offset": 12,
+        "value": "Canada"
+      }
+    ],
+    "types": [
+      "locality",
+      "political",
+      "geocode"
+    ]
+  }
+}

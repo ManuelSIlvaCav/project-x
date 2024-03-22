@@ -6,6 +6,7 @@ import DescriptionInput from "@/components/DescriptionInput";
 import NotificationToast from "@/components/NotificationToast";
 import MultiRangeSlider from "@/components/RangeSlider";
 import SectionHeader from "@/components/SectionHeader";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 
 const roles = [
@@ -13,6 +14,7 @@ const roles = [
   { id: "2", label: "Product Manager" },
   { id: "3", label: "Data Scientist" },
   { id: "4", label: "UX Designer" },
+  { id: "5", label: "UX Designer UX Designe UX Designe UX Designe" },
 ];
 
 const locations = [
@@ -30,32 +32,50 @@ const experienceLevels = {
   4: "Lead",
   5: "Director",
   6: "VP",
-};
-
-const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  //toast.success("Job posting saved"); // Displays a success message
-  toast.custom((t) => {
-    return <NotificationToast t={t} title="Job posting created" />;
-  });
+  7: "C-level",
 };
 
 export default function JobPostingForm() {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log({ data });
+    //toast.success("Job posting saved"); // Displays a success message
+    toast.custom((t) => {
+      return <NotificationToast t={t} title="Job posting created" />;
+    });
+  };
+
+  const formRef = useRef<HTMLFormElement>(null);
+
   return (
     <>
       <h1 className="flex align-center font-bold text-3xl pb-8">
         Tell us more about your job posting!
       </h1>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} ref={formRef}>
         <div className="flex flex-col gap-12">
           <div className="flex flex-col gap-2">
             <SectionHeader
               title="First things first, tell us about the role"
               description="Please include role name, experience level and a role description"
             />
-            <div>
-              <div className="">
-                <CustomSelect label="Role name" name="role" options={roles} />
+            <div className="flex flex-col gap-4">
+              <div className="col-span-full">
+                <CustomSelect
+                  label="Company area"
+                  name="company_function"
+                  options={roles}
+                  itemRef=""
+                />
+              </div>
+              <div className="col-span-full">
+                <CustomSelect
+                  label="Role name"
+                  name="role_name"
+                  options={roles}
+                />
               </div>
 
               <div className="py-8 h-3/5">
@@ -77,7 +97,7 @@ export default function JobPostingForm() {
               description="Please include if the job is remote/hybrid/in-office and the location of the office if required"
             />
 
-            <div>
+            <div className="flex flex-col gap-4">
               <div className="">
                 <CustomSelect
                   label="Where is this job based?"
@@ -85,6 +105,9 @@ export default function JobPostingForm() {
                   options={locations}
                 />
               </div>
+              {/* <div className="">
+                <AddressField />
+              </div> */}
             </div>
           </div>
 

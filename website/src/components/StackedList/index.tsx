@@ -14,7 +14,6 @@ type Props = React.ComponentPropsWithoutRef<"a"> & {
   options: Options[];
 };
 
-//TODO edit to make it more generic
 export default function StackedList(props: Props) {
   const options = props.options;
   return (
@@ -23,7 +22,7 @@ export default function StackedList(props: Props) {
         {options?.map((option) => (
           <Link
             key={option.id}
-            href={props.href + `${option.id}` + `${option.href}` ?? ""}
+            href={props.href + `/${option.id}` + `${option.href}` ?? ""}
           >
             <li className="flex items-center justify-between gap-x-6 py-5 cursor-pointer hover:bg-gray-100 px-4 sm:px-6 transition-colors duration-200 ease-in-out">
               <div className="flex min-w-0 gap-x-4">

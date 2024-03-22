@@ -42,11 +42,15 @@ type Props = {
   description: string;
   topRightButton: React.ReactNode;
   columns: Column[]; // ['Name', 'Title', 'Email', 'Role', <Button />]
-  data: any[]; //The rows of the table will be mapped against the columns
+  query: () => Promise<any>;
 };
 
-export default function Table(props: Props) {
-  const { topRightButton, columns, data, title, description } = props;
+export default async function Table(props: Props) {
+  const data = await props?.query?.();
+
+  console.log("in table", { data });
+
+  const { topRightButton, columns, title, description } = props;
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">

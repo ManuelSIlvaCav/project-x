@@ -1,5 +1,8 @@
+import authOptions from "@/app/api/auth/[...nextauth]/options";
 import type { Metadata } from "next";
-import { Header } from "../(company)/company/(internal)/Header";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { Header } from "../(internal)/Header";
 
 export const metadata: Metadata = {
   title: {
@@ -10,16 +13,23 @@ export const metadata: Metadata = {
     "By leveraging insights from our network of industry insiders, you’ll know exactly when to buy to maximize profit, and exactly when to sell to avoid painful losses.",
 };
 
-export default function JobsLayout({
+export default async function CompanyJobsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user?.generalRole !== "company" || !session?.user?.accessToken) {
+    //Redirect to user profile or company depending on user role
+    redirect("/");
+  }
+
   return (
     //Build the Profile layout with the Header - Main and Footer
     <div>
       <Header />
-      <div className="mx-auto flex w-full max-w-3xl flex-col px-4 sm:px-6">
+      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
         {children}
       </div>
     </div>
