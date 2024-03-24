@@ -58,7 +58,7 @@ func Register(container *container.Container, userRepository repository.UserRepo
 
 		logger.Info("User created ", "userId", userId)
 
-		createUserProfileErr := createUserProfile(container, profilesModule, userId)
+		createUserProfileErr := createUserProfile(container, profilesModule, userId, user.FirstName+" "+user.LastName)
 
 		if createUserProfileErr != nil {
 			return c.JSON(http.StatusInternalServerError, &echo.Map{"message": createUserProfileErr.Error()})
@@ -68,7 +68,7 @@ func Register(container *container.Container, userRepository repository.UserRepo
 	}
 }
 
-func createUserProfile(container *container.Container, profilesModule *profiles.ProfilesModule, userId string) error {
+func createUserProfile(container *container.Container, profilesModule *profiles.ProfilesModule, userId string, fullName string) error {
 
 	logger := container.GetLogger()
 
@@ -78,7 +78,7 @@ func createUserProfile(container *container.Container, profilesModule *profiles.
 		return err
 	}
 
-	newProfile := profiles_models.UserProfile{UserID: &objectId, WorkExperiences: []*profiles_models.WorkExperience{}}
+	newProfile := profiles_models.UserProfile{UserID: &objectId, FullName: fullName, WorkExperiences: []*profiles_models.WorkExperience{}}
 
 	logger.Info("Creating profile", "profile", newProfile)
 

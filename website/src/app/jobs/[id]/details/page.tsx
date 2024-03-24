@@ -4,6 +4,7 @@ import CandidateList from "./CandidatesList";
 //Is better to implement each page Candidates, Recommended, etc
 //And have an internal navigation between them on the same page
 export default function JobDetailPage() {
+  //TODO important validate access to this section and redirect if not allowed
   return (
     <>
       <div className="flex flex-col gap-10">

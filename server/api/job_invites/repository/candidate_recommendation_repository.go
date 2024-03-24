@@ -78,9 +78,29 @@ func (repo *candidateRecommendationRepository) GetCandidateRecommendations(filte
 	if limit > 0 {
 		opts.SetLimit(int64(limit))
 	}
+	matchStage := bson.D{
+		{
+			Key: "$match", Value: findAllFilter,
+		},
+	}
+
+	lookupStage := bson.D{
+		{
+			Key: "$lookup", Value: bson.D{
+				{Key: "from", Value: "user_profiles"},
+				{Key: "localField", Value: "candidateProfileId"},
+				{Key: "foreignField", Value: "_id"},
+				{Key: "as", Value: "candidate"},
+			},
+		},
+	}
+
+	unwindStage := bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$candidate"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}}
 
 	logger.Info("Getting candidate recommendations", "filter", findAllFilter)
-	cursor, err := repo.collection.Find(context.Background(), findAllFilter, opts)
+	//cursor, err := repo.collection.Find(context.Background(), findAllFilter, opts)
+
+	cursor, err := repo.collection.Aggregate(context.Background(), mongo.Pipeline{matchStage, lookupStage, unwindStage})
 
 	if err != nil {
 		return nil, err

@@ -15,6 +15,8 @@ type (
 
 		CV *files_model.File `json:"cv,omitempty" bson:"cv,omitempty"` // CV file should be used as ref when using lookup in mongo
 
+		FullName string `json:"full_name" bson:"fullName"`
+
 		//Contact information
 		ContactInformation *ContactInformation `json:"contact_information,omitempty" bson:"contactInformation,omitempty"`
 

@@ -19,7 +19,7 @@ export default function JobsLayout({
     //Build the Profile layout with the Header - Main and Footer
     <div>
       <Header />
-      <div className="mx-auto flex w-full max-w-3xl flex-col px-4 sm:px-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-4 sm:px-6">
         {children}
       </div>
     </div>
