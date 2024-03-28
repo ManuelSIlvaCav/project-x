@@ -9,7 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type (
@@ -73,14 +72,15 @@ func (repo *candidateRecommendationRepository) GetCandidateRecommendations(filte
 		findAllFilter = append(findAllFilter, bson.E{Key: "_id", Value: bson.D{{Key: "$gt", Value: cursorID}}})
 	}
 
-	opts := &options.FindOptions{}
-
-	if limit > 0 {
-		opts.SetLimit(int64(limit))
-	}
 	matchStage := bson.D{
 		{
 			Key: "$match", Value: findAllFilter,
+		},
+	}
+
+	limitStage := bson.D{
+		{
+			Key: "$limit", Value: limit,
 		},
 	}
 
@@ -100,7 +100,7 @@ func (repo *candidateRecommendationRepository) GetCandidateRecommendations(filte
 	logger.Info("Getting candidate recommendations", "filter", findAllFilter)
 	//cursor, err := repo.collection.Find(context.Background(), findAllFilter, opts)
 
-	cursor, err := repo.collection.Aggregate(context.Background(), mongo.Pipeline{matchStage, lookupStage, unwindStage})
+	cursor, err := repo.collection.Aggregate(context.Background(), mongo.Pipeline{matchStage, limitStage, lookupStage, unwindStage})
 
 	if err != nil {
 		return nil, err

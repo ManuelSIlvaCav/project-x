@@ -1,9 +1,10 @@
-import { updateWorkExperience } from "@/app/lib/actions/updateWorkExperience";
+import { updateWorkExperience } from "@/app/lib/actions/candidateProfile/updateWorkExperience";
 import ErrorAlert from "@/components/Alerts/ErrorAlerts";
 import { Button } from "@/components/Button";
 import TextArea from "@/components/TextArea";
-import { FormEvent, useContext, useEffect } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
+import { WorkExperience } from "../../../interfaces/Profile";
 import { WorkExperienceWizardContext } from "../context";
 
 enum CharCodeEnum {
@@ -15,18 +16,27 @@ enum CharCodeEnum {
 }
 
 const bullet = "\u2022";
+const bulletWithSpace = `${bullet} `;
 
 export default function RoleOverviewForm(props: {
-  handleNext: (workExperienceId?: string, successMessage?: string) => void;
+  handleNext: (workExperience: WorkExperience, successMessage?: string) => void;
 }) {
   const { handleNext } = props;
   const [state, dispatch] = useFormState(updateWorkExperience, null);
 
-  const workExperienceWizardData = useContext(WorkExperienceWizardContext);
+  const workExperienceWizardContext = useContext(WorkExperienceWizardContext);
+
+  const [formData, setFormData] = useState<WorkExperience | null>(
+    workExperienceWizardContext.workExperience ?? null
+  );
 
   useEffect(() => {
-    if (state?.success && state?.id) {
-      handleNext(state.id);
+    setFormData(workExperienceWizardContext.workExperience);
+  }, [workExperienceWizardContext.workExperience]);
+
+  useEffect(() => {
+    if (state?.success && state?.workExperience) {
+      handleNext(state.workExperience);
     }
   }, [state, handleNext]);
 
@@ -34,8 +44,14 @@ export default function RoleOverviewForm(props: {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    formData.append("id", workExperienceWizardData.workExperienceId as string);
-    formData.append("profileId", workExperienceWizardData.profileId as string);
+    formData.append(
+      "id",
+      workExperienceWizardContext.workExperience?.id as string
+    );
+    formData.append(
+      "profileId",
+      workExperienceWizardContext.profileId as string
+    );
 
     //We need to format the text area content into an array of strings separated by separator
     const roleDescription = formData.get("role_description") as string;
@@ -53,33 +69,22 @@ export default function RoleOverviewForm(props: {
   }
 
   const handleInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    const newLength = e.currentTarget.value.length;
+    const target = e.currentTarget as HTMLTextAreaElement;
+    const { code } = e as React.KeyboardEvent<HTMLTextAreaElement>;
 
-    const characterCode = e.currentTarget.value
-      .substring(newLength - 1, newLength)
-      .charCodeAt(0);
+    const { selectionStart, value } = target;
 
-    const previousCharacterCode = e.currentTarget.value
-      .substring(newLength - 2, newLength - 1)
-      .charCodeAt(0);
+    if (code === "Enter") {
+      target.value = [...(value as any)]
+        .map((c, i) => (i === selectionStart - 1 ? `\n${bulletWithSpace}` : c))
+        .join("");
 
-    if (newLength === 1) {
-      return (e.currentTarget.value = `${bullet} ${e.currentTarget.value}`);
+      target.selectionStart = selectionStart + bulletWithSpace.length;
+      target.selectionEnd = selectionStart + bulletWithSpace.length;
     }
 
-    //Charcode enter
-    if (characterCode === CharCodeEnum.NEWLINE) {
-      if (
-        previousCharacterCode === CharCodeEnum.SPACE ||
-        previousCharacterCode === CharCodeEnum.TAB ||
-        previousCharacterCode === CharCodeEnum.BULLET
-      ) {
-        return (e.currentTarget.value = e.currentTarget.value.substring(
-          0,
-          newLength - 1
-        ));
-      }
-      e.currentTarget.value = `${e.currentTarget.value}${bullet} `;
+    if (value[0] !== bullet) {
+      target.value = `${bulletWithSpace}${value}`;
     }
   };
 
@@ -103,8 +108,15 @@ export default function RoleOverviewForm(props: {
               placeholder={placeHolder}
               wrap={"hard"}
               cols={20}
-              rows={4}
-              onInput={handleInput}
+              rows={6}
+              onKeyUp={handleInput}
+              defaultValue={formData?.descriptions
+                ?.map((description, index) => {
+                  return `${bullet} ${description.value} ${
+                    index === formData?.descriptions?.length - 1 ? "" : "\n"
+                  }`;
+                })
+                .join("")}
             />
             {state?.errors?.length ? (
               <ErrorAlert

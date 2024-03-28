@@ -3,11 +3,15 @@ import authOptions from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { cache } from "react";
 
-const getProfile = cache(async () => {
+//TODO fix to receive userId as parameter and build another request "me" to get the user info
+const getProfile = cache(async (profileId?: string) => {
   const session = await getServerSession(authOptions);
   const user = session?.user;
-  const userId = user?.userId;
+  const userId = profileId ?? user?.userId;
   const jwtToken = user?.accessToken;
+
+  console.log("userId", { userId, profileId });
+
   try {
     const url = `${process.env.API_PATH}/profiles/${userId}`;
     const res = await fetch(url, {

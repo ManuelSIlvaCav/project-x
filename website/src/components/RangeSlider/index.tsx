@@ -10,6 +10,8 @@ type Props = {
   title: string;
   step: number;
   valuesName?: Record<number, string>;
+  minName?: string;
+  maxName?: string;
 };
 
 export default function MultiRangeSlider({
@@ -19,6 +21,8 @@ export default function MultiRangeSlider({
   title,
   step,
   valuesName,
+  minName,
+  maxName,
 }: Props) {
   const [minVal, setMinVal] = useState(min);
   const [maxVal, setMaxVal] = useState(max);
@@ -68,7 +72,9 @@ export default function MultiRangeSlider({
       </div>
       <div>
         <input
+          id={minName}
           type="range"
+          name={minName}
           min={min}
           max={max}
           value={minVal}
@@ -82,7 +88,9 @@ export default function MultiRangeSlider({
           style={{ zIndex: minVal > max - 100 ? 5 : undefined }}
         />
         <input
+          id={maxName}
           type="range"
+          name={maxName}
           min={min}
           max={max}
           step={step}

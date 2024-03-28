@@ -17,6 +17,10 @@ type (
 
 		FullName string `json:"full_name" bson:"fullName"`
 
+		Email string `json:"email" bson:"email" validate:"required,email" errormgs:"Email is required and must be a valid email address"`
+
+		Phone string `json:"phone" bson:"phone,omitempty"`
+
 		//Contact information
 		ContactInformation *ContactInformation `json:"contact_information,omitempty" bson:"contactInformation,omitempty"`
 
@@ -26,33 +30,36 @@ type (
 		//Education
 		Education []*Education `json:"education,omitempty" bson:"education,omitempty"`
 
+		//Additional information
+		AdditionalInformation *AdditionalInformation `json:"additional_information,omitempty" bson:"additionalInformation,omitempty"`
+
 		//Links
 		Links *Links `json:"links,omitempty" bson:"links,omitempty"`
 	}
 
 	ContactInformation struct {
-		Email    string `json:"email" bson:"email"`
 		Phone    string `json:"phone" bson:"phone"`
 		Address  string `json:"address" bson:"address"`
 		Location string `json:"location" bson:"location"`
+	}
+
+	AdditionalInformation struct {
+		RequiresVisaIn []string `json:"requires_visa_in" bson:"requiresVisaIn"`
+		NoticePeriod   int      `json:"notice_period" bson:"noticePeriod"`
+		Languages      []string `json:"languages" bson:"languages"`
 	}
 
 	WorkExperience struct {
 		ID                 primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 		Company            string             `json:"company" bson:"company"`
 		Role               string             `json:"role" bson:"role"`
-		StartDateMonth     string             `json:"start_date_month" bson:"startDateMonth"`
-		StartDateYear      string             `json:"start_date_year" bson:"startDateYear"`
-		EndDateYear        string             `json:"end_date_year" bson:"endDateYear"`
-		EndDateMonth       string             `json:"end_date_month" bson:"endDateMonth"`
+		StartDateMonth     int                `json:"start_date_month" bson:"startDateMonth"`
+		StartDateYear      int                `json:"start_date_year" bson:"startDateYear"`
+		EndDateYear        int                `json:"end_date_year" bson:"endDateYear"`
+		EndDateMonth       int                `json:"end_date_month" bson:"endDateMonth"`
 		CompanyDescription string             `json:"company_description,omitempty" bson:"companyDescription,omitempty"`
 		CompanyWebsite     string             `json:"company_website,omitempty" bson:"companyWebsite,omitempty"`
 		Descriptions       []*Description     `json:"descriptions,omitempty" bson:"descriptions,omitempty"`
-	}
-
-	Description struct {
-		ID    *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-		Value string              `json:"value" bson:"value"`
 	}
 
 	Education struct {
@@ -68,5 +75,10 @@ type (
 		Github    string `json:"github" bson:"github"`
 		Portfolio string `json:"portfolio" bson:"portfolio"`
 		Other     string `json:"other" bson:"other"`
+	}
+
+	Description struct {
+		ID    *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+		Value string              `json:"value" bson:"value"`
 	}
 )

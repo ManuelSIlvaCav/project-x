@@ -3,9 +3,10 @@ import WorkExperiencesCard from "./WorkExperiencesCard";
 
 type Props = {
   profile: Profile;
+  canEdit?: boolean;
 };
 
-export default async function WorkExperiences(props: Props) {
+export default function WorkExperiences(props: Props) {
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -15,6 +16,7 @@ export default async function WorkExperiences(props: Props) {
               <WorkExperiencesCard
                 key={workExperience.id}
                 workExperience={workExperience}
+                canEdit={props.canEdit}
               />
             );
           }

@@ -13,12 +13,12 @@ import (
 
 type (
 	WorkExperienceOverviewInput struct {
-		Company        string `json:"company" validate:"required"`
-		Role           string `json:"role" validate:"required"`
-		StartDateMonth string `json:"start_date_month" validate:"required"`
-		StartDateYear  string `json:"start_date_year" validate:"required"`
-		EndDateMonth   string `json:"end_date_month" validate:"required"`
-		EndDateYear    string `json:"end_date_year" validate:"required"`
+		Company        string `json:"company" validate:"required,min=2,max=100" errormgs:"Company is required and must be between 2 and 100 characters long"`
+		Role           string `json:"role" validate:"required,min=2,max=100" errormgs:"Role is required and must be between 2 and 100 characters long"`
+		StartDateMonth int    `json:"start_date_month" validate:"required,gte=1,lte=12"`
+		StartDateYear  int    `json:"start_date_year" validate:"required,gte=1900,lte=2100"` //SORRY, I HAD TO ADD THIS
+		EndDateMonth   int    `json:"end_date_month" validate:"required,gte=1,lte=12"`
+		EndDateYear    int    `json:"end_date_year" validate:"required,gte=1900,lte=2100,gtefield=StartDateYear"`
 	}
 
 	WorkExperienceRoleOverviewInput struct {
@@ -40,7 +40,6 @@ type (
 	}
 )
 
-// UpdateWorkExperience updates the work experiences of a user, depending on the userId. It can update information on 3 inputs work_experience_overview, role_overview, company_overview for a customized wizard
 func UpdateWorkExperience(container *container.Container, userProfileRepository profiles_repository.UserProfilesRepository) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := context.Background()
@@ -52,7 +51,8 @@ func UpdateWorkExperience(container *container.Container, userProfileRepository 
 		var workExperienceData WorkExperienceInput
 
 		if err := c.Bind(&workExperienceData); err != nil {
-			return c.JSON(http.StatusBadRequest, &echo.Map{"message": err.Error()})
+			logger.Error("Failed to bind the data", "error", err.Error())
+			return c.JSON(http.StatusBadRequest, &echo.Map{"message": "Input data is invalid"})
 		}
 
 		validator := container.GetCustomValidator()

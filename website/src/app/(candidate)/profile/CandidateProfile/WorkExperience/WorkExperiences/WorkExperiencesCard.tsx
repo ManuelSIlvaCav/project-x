@@ -1,11 +1,14 @@
 import Card from "@/components/Card";
 import { monthValueName } from "@/utils/months";
 import { WorkExperience } from "../../interfaces/Profile";
+import EditButton from "./EditButton";
 
 export default function WorkExperiencesCard({
   workExperience,
+  canEdit,
 }: {
   workExperience: WorkExperience;
+  canEdit?: boolean;
 }) {
   const {
     role,
@@ -17,11 +20,11 @@ export default function WorkExperiencesCard({
     descriptions,
   } = workExperience;
 
-  function dateFormater(month: string, year: string) {
+  function dateFormater(month: number, year: number) {
     return `${monthName(month)} ${year}`;
   }
 
-  function monthName(month: string) {
+  function monthName(month: number) {
     return monthValueName[month];
   }
 
@@ -29,9 +32,17 @@ export default function WorkExperiencesCard({
     <div>
       <Card>
         <div className="flex flex-col gap-2 p-6">
-          <div>
-            <span className="text-2xl font-bold">{`${role}, ${company}`}</span>
+          <div className="flex flex-row space-x-0 justify-between">
+            <div>
+              <span className="text-xl font-bold">{`${role}, ${company}`}</span>
+            </div>
+            {canEdit ? (
+              <div className="h-4 w-4">
+                <EditButton workExperience={workExperience} />
+              </div>
+            ) : null}
           </div>
+
           <div>
             <span className="font-light text-sm">{`${dateFormater(
               start_date_month,

@@ -8,7 +8,7 @@ async function InnerUploadCV() {
   return <UploadCVComponent profile={profile} />;
 }
 
-export default async function UploadCV() {
+export default function UploadCV() {
   return (
     <div>
       <div className="pb-2">

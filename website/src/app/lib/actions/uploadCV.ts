@@ -3,8 +3,16 @@
 import authOptions from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { revalidateTag } from "next/cache";
+import { CustomError } from "../interfaces/Error";
 
-export async function uploadCV(prevState: any, formData: FormData) {
+export async function uploadCV(
+  prevState: any,
+  formData: FormData
+): Promise<{
+  success: boolean;
+  cvFileId?: string;
+  errors: CustomError[];
+}> {
   const url = `${process.env.API_PATH}/profiles/upload-cv`;
   try {
     const session = await getServerSession(authOptions);
@@ -13,7 +21,7 @@ export async function uploadCV(prevState: any, formData: FormData) {
     const userId = user?.userId;
 
     if (!userId) {
-      return "You need to be logged in to upload your CV";
+      return { success: false, errors: [{ message: "User not found" }] };
     }
 
     const file = formData.get("cv") as File;
@@ -30,12 +38,13 @@ export async function uploadCV(prevState: any, formData: FormData) {
 
     if (!response.ok) {
       console.log("something wrong", { data });
-      return data?.message ?? "Something went wrong";
+      return { success: false, errors: data.errors };
     }
   } catch (error) {
     console.error("Error:", { error, url });
-    return { message: "Error: Something went wrong. Please try again." };
+    return { success: false, errors: [{ message: "Something went wrong" }] };
   }
 
   revalidateTag("profile");
+  return { success: true, cvFileId: "1", errors: [] };
 }

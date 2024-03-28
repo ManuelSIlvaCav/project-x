@@ -1,15 +1,19 @@
 "use client";
-import { updateWorkExperience } from "@/app/lib/actions/updateWorkExperience";
+import { updateWorkExperience } from "@/app/lib/actions/candidateProfile/updateWorkExperience";
 import ErrorAlert from "@/components/Alerts/ErrorAlerts";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/Fields";
 import TextArea from "@/components/TextArea";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
+import { WorkExperience } from "../../../interfaces/Profile";
 import { WorkExperienceWizardContext } from "../context";
 
 export default function CompanyOverview(props: {
-  handleNext: (workExperienceId?: string, successMessage?: string) => void;
+  handleNext: (
+    workExperience?: WorkExperience,
+    successMessage?: string
+  ) => void;
 }) {
   const { handleNext } = props;
   const [state, dispatch] = useFormState(updateWorkExperience, null);
@@ -23,7 +27,7 @@ export default function CompanyOverview(props: {
       const formData = new FormData(e.currentTarget);
       formData.append(
         "id",
-        workExperienceWizardData.workExperienceId as string
+        workExperienceWizardData.workExperience?.id as string
       );
       formData.append(
         "profileId",

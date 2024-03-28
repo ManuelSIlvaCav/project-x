@@ -197,11 +197,11 @@ export function MultipleFeaturesSection() {
       <Container>
         <div className="mx-auto max-w-2xl sm:text-center">
           <h2 className="text-3xl font-medium tracking-tight text-gray-900">
-            Come join UNKA and start your recruting journey
+            Come join Hoopme and start your recruiting journey
           </h2>
           <p className="mt-2 text-lg text-gray-600">
-            We are a community of companies and professional who are passionate
-            about technology and want to help each other grow.
+            We are a your virtual agency that helps you find the ideal job for
+            you
           </p>
         </div>
         <ul

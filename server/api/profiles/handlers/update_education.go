@@ -17,8 +17,8 @@ type (
 		ProfileId     string `param:"profile_id" validate:"required"`
 		StartDateYear string `json:"start_date_year" validate:"required"`
 		EndDateYear   string `json:"end_date_year" validate:"required"`
-		SchoolName    string `json:"school_name" validate:"required"`
-		Description   string `json:"description" validate:"required"`
+		SchoolName    string `json:"school_name" validate:"required" errormgs:"School name is required"`
+		Description   string `json:"description" validate:"required" errormgs:"Description is required"`
 	}
 )
 

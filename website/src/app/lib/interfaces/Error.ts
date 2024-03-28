@@ -3,6 +3,7 @@ export enum CustomErrorCodes {
 }
 
 export interface CustomError {
-  errors: { field: string; message: string }[];
-  code: number;
+  field?: string;
+  message: string;
+  code?: number;
 }

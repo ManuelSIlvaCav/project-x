@@ -26,6 +26,7 @@ func NewProfilesModule(container *container.Container, router *router.Router, fi
 		router.BuildRoute("PUT", "/:profile_id/work-experience", profiles_handlers.UpdateWorkExperience(container, userProfilesRepository)),
 		router.BuildRoute("PUT", "/:profile_id/education", profiles_handlers.UpdateEducation(container, userProfilesRepository)),
 		router.BuildRoute("GET", "/:profile_id", profiles_handlers.GetProfile(container, userProfilesRepository)),
+		router.BuildRoute("DELETE", "/:profile_id/work-experience/:work_experience_id", profiles_handlers.DeleteWorkExperience(container, userProfilesRepository)),
 	)
 
 	router.SetRoutes("/profiles", routes)

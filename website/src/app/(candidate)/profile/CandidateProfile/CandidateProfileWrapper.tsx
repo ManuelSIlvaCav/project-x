@@ -1,5 +1,6 @@
 import Skeleton from "@/components/Dashboard/Skeleton";
 import { Suspense } from "react";
+import AdditionalDetails from "./AdditionalDetails";
 import Education from "./Education";
 import UploadCV from "./UploadCV";
 import WorkExperience from "./WorkExperience";
@@ -15,6 +16,9 @@ export default function CandidateProfileWrapper(props: Props) {
       </Suspense>
       <Suspense fallback={<Skeleton />}>
         <Education />
+      </Suspense>
+      <Suspense fallback={<Skeleton />}>
+        <AdditionalDetails />
       </Suspense>
     </div>
   );

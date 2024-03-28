@@ -11,15 +11,18 @@ interface PaginatedResponse {
 }
 
 const getCandidateRecommendation = cache(
-  async (limit: number = 10): Promise<PaginatedResponse> => {
+  async (
+    companyId: string,
+    limit: number = 10,
+    cursor?: string
+  ): Promise<PaginatedResponse> => {
     const session = await getServerSession(authOptions);
     const user = session?.user;
     const jwtToken = user?.accessToken;
 
-    const companyId = "65fc06367a0b7b8617734d26";
-
     try {
       const url = `${process.env.API_PATH}/candidate-recommendation?limit=${limit}&company_id=${companyId}`;
+      console.log({ url });
       const res = await fetch(url, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,

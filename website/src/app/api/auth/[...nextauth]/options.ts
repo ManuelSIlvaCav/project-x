@@ -69,7 +69,8 @@ const providers = [
         });
 
         if (!res.ok) {
-          const errorData: CustomError = await res.json();
+          const errorData: CustomError & { errors?: { message: string }[] } =
+            await res.json();
           const errorMessage =
             errorData?.errors?.[0]?.message ?? "Error signing in";
           console.log("Error on authorize", {

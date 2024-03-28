@@ -21,7 +21,6 @@ export default function UploadCVComponent(props: Props) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = event.target;
     if (files?.length) {
-      console.log("going in files", { name, value, files, event });
       return setData((prevFormData) => ({
         ...prevFormData,
         cv: event.target.files?.[0],
@@ -40,8 +39,9 @@ export default function UploadCVComponent(props: Props) {
   }, [data?.cv, dispatch]);
 
   useEffect(() => {
-    if (state) {
+    if (!state?.success) {
       setData({ cv: undefined });
+      //Notify the user of the error with toaster
     }
   }, [state]);
 
@@ -52,7 +52,7 @@ export default function UploadCVComponent(props: Props) {
         onChange={handleInputChange}
         file={profile?.cv || data.cv}
       />
-      {state ? <ErrorAlert title={state} /> : null}
+      {state ? <ErrorAlert title={"Error uploading CV"} /> : null}
     </div>
   );
 }

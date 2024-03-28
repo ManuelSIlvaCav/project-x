@@ -2,10 +2,10 @@ export interface WorkExperience {
   id: string;
   role: string;
   company: string;
-  start_date_month: string;
-  start_date_year: string;
-  end_date_year: string;
-  end_date_month: string;
+  start_date_month: number;
+  start_date_year: number;
+  end_date_year: number;
+  end_date_month: number;
   descriptions: { value: string }[];
 }
 

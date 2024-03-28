@@ -4,28 +4,62 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 import { Fragment, useState } from "react";
 
-export default function CustomSelectCheck({
+export default function CustomSelect({
   label,
   name,
   className,
   errorMessage,
   options,
   placeholder = "Select an option",
+  multiple = false,
   ...props
 }: Omit<React.ComponentPropsWithoutRef<"input">, "id"> & {
   errorMessage?: string | null;
   label: string;
   name: string;
   placeholder?: string;
+  multiple?: boolean;
   options: { id: string; label: string }[];
 }) {
-  const [selected, setSelected] = useState<{
-    id: string;
-    label: string;
-  } | null>(null);
+  const [selected, setSelected] = useState<
+    | {
+        id: string;
+        label: string;
+      }
+    | { id: string; label: string }[]
+    | null
+  >(multiple ? [] : null);
+
+  function onChange(value: { id: string; label: string }) {
+    console.log("onChange", value);
+    setSelected(value);
+  }
+
+  function getLabel(
+    selectedInput:
+      | { id: string; label: string }
+      | { id: string; label: string }[]
+      | null
+  ) {
+    if (selectedInput === null) return placeholder;
+    if (Array.isArray(selectedInput)) {
+      return selectedInput
+        .map((item) => {
+          return options.find((option) => option.id === item.id)?.label;
+        })
+        .join(", ");
+    }
+    return options.find((option) => option.id === selectedInput.id)?.label;
+  }
 
   return (
-    <Listbox value={selected} onChange={setSelected} by={"id"} name={name}>
+    <Listbox
+      value={selected}
+      onChange={onChange}
+      by={"id"}
+      name={name}
+      multiple={multiple}
+    >
       {({ open }) => (
         <>
           <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
@@ -35,9 +69,7 @@ export default function CustomSelectCheck({
             <Listbox.Button className="w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-3 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
               <div className="grid grid-cols-2">
                 <div className="col-span-1">
-                  <span className="block truncate">
-                    {selected?.label ?? placeholder}
-                  </span>
+                  <span className="block truncate">{getLabel(selected)}</span>
                 </div>
                 <div className="flex col-span-1 justify-end items-end">
                   <span className="pointer-events-none relative flex items-center ">

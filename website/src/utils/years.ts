@@ -1,3 +1,8 @@
+export function getYearObject(year: number | undefined) {
+  if (!year) return undefined;
+  return { id: year.toString(), label: year.toString() };
+}
+
 export default function years() {
   //Return array from current year to 65 years back
   const currentYear = new Date().getFullYear();

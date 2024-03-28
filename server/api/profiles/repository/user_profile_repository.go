@@ -19,6 +19,7 @@ type UserProfilesRepository interface {
 	GetUserProfile(profileId string) (*profiles_models.UserProfile, error)
 	// UpdateUserProfileWorkExperience updates the work experience of a user
 	UpdateUserProfileWorkExperience(profileId string, workExperienceId string, workExperience profiles_models.WorkExperience) (*profiles_models.UserProfile, error)
+	DeleteUserProfileWorkExperience(profileId string, workExperienceId string) (string, error)
 
 	UpdateUserProfileEducation(profileId string, educationId string, education profiles_models.Education) (*profiles_models.UserProfile, error)
 
@@ -100,6 +101,8 @@ func (repo *userProfilesRepository) GetUserProfile(userId string) (*profiles_mod
 	// Create a new instance of UserProfile
 	userProfile := &profiles_models.UserProfile{}
 
+	logger.Info("Result profile", "resultProfile", resultProfile)
+
 	// Assign values from resultProfile[0] to userProfile
 	bsonBytes, _ := bson.Marshal(resultProfile[0])
 	bson.Unmarshal(bsonBytes, userProfile)
@@ -169,16 +172,16 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(profileId st
 		if workExperience.Role != "" {
 			setData["workExperiences.$.role"] = workExperience.Role
 		}
-		if workExperience.StartDateMonth != "" {
+		if workExperience.StartDateMonth > 0 {
 			setData["workExperiences.$.startDateMonth"] = workExperience.StartDateMonth
 		}
-		if workExperience.StartDateYear != "" {
+		if workExperience.StartDateYear > 0 {
 			setData["workExperiences.$.startDateYear"] = workExperience.StartDateYear
 		}
-		if workExperience.EndDateMonth != "" {
+		if workExperience.EndDateMonth > 0 {
 			setData["workExperiences.$.endDateMonth"] = workExperience.EndDateMonth
 		}
-		if workExperience.EndDateYear != "" {
+		if workExperience.EndDateYear > 0 {
 			setData["workExperiences.$.endDateYear"] = workExperience.EndDateYear
 		}
 
@@ -191,7 +194,7 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(profileId st
 		//We need to create a new work experience
 		filter = bson.D{{Key: "_id", Value: objectProfileId}}
 		workExperience.ID = primitive.NewObjectID()
-		update = bson.M{"$push": bson.M{"workExperiences": workExperience}}
+		update = bson.M{"$push": bson.M{"workExperiences": bson.M{"$each": []profiles_models.WorkExperience{workExperience}, "$position": 0}}}
 	}
 
 	logger.Info("Updating work experience", "filter", filter, "update", update)
@@ -213,6 +216,46 @@ func (repo *userProfilesRepository) UpdateUserProfileWorkExperience(profileId st
 	}
 
 	return &updatedDoc, nil
+}
+
+func (repo *userProfilesRepository) DeleteUserProfileWorkExperience(profileId string, workExperienceId string) (string, error) {
+	logger := repo.container.GetLogger()
+	ctx := context.Background()
+
+	userCollection := (repo.container.GetMongoDB()).GetCollection("user_profiles")
+
+	objectProfileId, userIdObjectError := primitive.ObjectIDFromHex(profileId)
+
+	if userIdObjectError != nil {
+		return "", errors.New("could not parse user id")
+	}
+
+	objectWorkExperienceID, err := primitive.ObjectIDFromHex(workExperienceId)
+
+	if err != nil {
+		return "", errors.New("could not parse work experience id")
+	}
+
+	filter := bson.D{{Key: "_id", Value: objectProfileId}}
+	update := bson.M{"$pull": bson.M{"workExperiences": bson.M{"_id": objectWorkExperienceID}}}
+
+	logger.Info("Deleting work experience", "filter", filter, "update", update)
+
+	var updatedDoc profiles_models.UserProfile
+	opts := &options.FindOneAndUpdateOptions{}
+	opts.SetReturnDocument(options.After)
+	err = userCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedDoc)
+
+	logger.Warn("Deleted work experience", "updatedDoc", updatedDoc, "err", err)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return "", errors.New("could not find user profile")
+		}
+		return "", err
+	}
+
+	return workExperienceId, nil
 }
 
 func (repo *userProfilesRepository) UpdateUserProfileEducation(profileId string, educationId string, education profiles_models.Education) (*profiles_models.UserProfile, error) {

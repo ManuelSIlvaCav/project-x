@@ -1,5 +1,6 @@
 import Card from "@/components/Card";
-import { useState } from "react";
+import NotificationToast from "@/components/NotificationToast";
+import toast from "react-hot-toast";
 import CreateEducation from "./CreateEducation";
 
 type Props = {
@@ -10,11 +11,18 @@ type Props = {
 
 export default function EducationWizard(props: Props) {
   const { open, setEducationId, setOpen } = props;
-  const [step, setStep] = useState(1);
+
+  function onCreate() {
+    toast.custom((t) => {
+      return <NotificationToast t={t} title={"Education updated!"} />;
+    });
+    setEducationId(undefined);
+    setOpen(false);
+  }
 
   return (
     <Card className={`${open ? "p-4" : "hidden"}`}>
-      <CreateEducation />
+      <CreateEducation onCreate={onCreate} />
     </Card>
   );
 }

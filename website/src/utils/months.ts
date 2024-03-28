@@ -20,6 +20,11 @@ export const monthValueName: Record<string, string> = {
   }, {}),
 };
 
+export function getMonthObject(month: number | undefined) {
+  if (!month) return undefined;
+  return { id: month.toString(), label: monthValueName[month.toString()] };
+}
+
 export default function months() {
   return monthsNameList.map((month, index) => ({
     id: (index + 1).toString(),

@@ -1,9 +1,10 @@
 "use server";
 
+import { WorkExperience } from "@/app/(candidate)/profile/CandidateProfile/interfaces/Profile";
 import authOptions from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { revalidateTag } from "next/cache";
-import { CustomError } from "../interfaces/Error";
+import { CustomError } from "../../interfaces/Error";
 
 function buildBody(formData: FormData) {
   const id = formData.get("id") as string;
@@ -32,10 +33,10 @@ function buildBody(formData: FormData) {
     body["work_experience_overview"] = {
       company,
       role,
-      start_date_month: startDateMonth,
-      start_date_year: startDateYear,
-      end_date_month: endDateMonth,
-      end_date_year: endDateYear,
+      start_date_month: parseInt(startDateMonth),
+      start_date_year: parseInt(startDateYear),
+      end_date_month: parseInt(endDateMonth),
+      end_date_year: parseInt(endDateYear),
     };
   }
 
@@ -62,13 +63,18 @@ function buildBody(formData: FormData) {
 export async function updateWorkExperience(
   prevState: any,
   formData: FormData
-): Promise<{ success: boolean; id?: string; errors?: any[] }> {
+): Promise<{
+  success: boolean;
+  workExperience?: WorkExperience;
+  errors: CustomError[];
+}> {
   const session = await getServerSession(authOptions);
 
   const user = session?.user;
   const jwtToken = user?.accessToken;
 
   const profileId = formData.get("profileId") as string;
+
   if (!profileId) {
     return {
       success: false,
@@ -80,6 +86,7 @@ export async function updateWorkExperience(
   try {
     const body = buildBody(formData);
 
+    console.log("bidy", JSON.stringify(body));
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -99,6 +106,7 @@ export async function updateWorkExperience(
           errors: [{ message: data?.message ?? "Something went wrong" }],
         }),
       };
+
       console.log("something wrong", {
         data,
         badResponse: JSON.stringify(badResponse),
@@ -106,15 +114,27 @@ export async function updateWorkExperience(
       return badResponse;
     }
 
-    //Important we do not return for the last step of the wizard could change in the future
-    if (!body.company_overview) {
-      const workExperiencesArray = data?.data?.work_experiences;
-      //We will have a return for the full profile we need to keep track of the last one
+    const workExperiencesArray = data?.data?.work_experiences;
+    revalidateTag("profile");
+    //We return the current work experience first in the array but the correct one should be the one that was updated looking at the id
+    if (!formData.get("id")) {
       return {
         success: true,
-        id: workExperiencesArray[workExperiencesArray.length - 1]?.id,
+        workExperience: workExperiencesArray[0],
+        errors: [],
       };
     }
+
+    const workExperience = workExperiencesArray.find(
+      (workExperience: WorkExperience) =>
+        workExperience.id === formData.get("id")
+    );
+
+    return {
+      success: true,
+      workExperience,
+      errors: [],
+    };
   } catch (error) {
     console.error("Error:", { error, url });
     return {
@@ -122,7 +142,4 @@ export async function updateWorkExperience(
       errors: [{ message: "Error: Something went wrong. Please try again." }],
     };
   }
-
-  revalidateTag("profile");
-  return { success: true, id: "" };
 }

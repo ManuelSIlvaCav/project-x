@@ -9,6 +9,8 @@ const baseStyles = {
     "inline-flex justify-center rounded-lg py-2 px-3 text-sm font-semibold outline-2 outline-offset-2 transition-colors",
   outline:
     "inline-flex justify-center rounded-lg border py-[calc(theme(spacing.2)-1px)] px-[calc(theme(spacing.3)-1px)] text-sm outline-2 outline-offset-2 transition-colors",
+  danger:
+    "inline-flex justify-center rounded-lg py-2 px-3 text-sm font-semibold outline-2 outline-offset-2 transition-colors",
 };
 
 const variantStyles = {
@@ -21,6 +23,9 @@ const variantStyles = {
   outline: {
     gray: "border-gray-300 text-gray-700 hover:border-gray-400 active:bg-gray-100 active:text-gray-700/80",
   },
+  danger: {
+    red: "border-red-300 text-red-700 hover:border-red-400 bg-red-500 text-white/100 active:bg-red-100 active:text-white/80",
+  },
 };
 
 type ButtonProps = (
@@ -31,6 +36,10 @@ type ButtonProps = (
   | {
       variant: "outline";
       color?: keyof typeof variantStyles.outline;
+    }
+  | {
+      variant: "danger";
+      color?: keyof typeof variantStyles.danger;
     }
 ) &
   (
@@ -55,6 +64,8 @@ export function Button({ className, children, ...props }: ButtonProps) {
       ? variantStyles.outline[props.color]
       : props.variant === "solid"
       ? variantStyles.solid[props.color]
+      : props.variant === "danger"
+      ? variantStyles.danger["red"]
       : undefined,
     className
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { newjob } from "@/app/lib/actions/company/newjob";
 import { Button } from "@/components/Button";
 import CustomSelect from "@/components/CustomSelect";
 import DescriptionInput from "@/components/DescriptionInput";
@@ -7,15 +8,11 @@ import NotificationToast from "@/components/NotificationToast";
 import MultiRangeSlider from "@/components/RangeSlider";
 import SectionHeader from "@/components/SectionHeader";
 import { useRef } from "react";
+import { useFormState } from "react-dom";
 import toast from "react-hot-toast";
-
-const roles = [
-  { id: "1", label: "Software Engineer" },
-  { id: "2", label: "Product Manager" },
-  { id: "3", label: "Data Scientist" },
-  { id: "4", label: "UX Designer" },
-  { id: "5", label: "UX Designer UX Designe UX Designe UX Designe" },
-];
+import companyFunctions from "./consts/companyFunctions";
+import roles from "./consts/roles";
+import workTypes from "./consts/workTypes";
 
 const locations = [
   { id: "1", label: "Remote" },
@@ -36,12 +33,15 @@ const experienceLevels = {
 };
 
 export default function JobPostingForm() {
+  const [state, dispatch] = useFormState(newjob, null);
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     console.log({ data });
-    //toast.success("Job posting saved"); // Displays a success message
+    dispatch(formData);
+
     toast.custom((t) => {
       return <NotificationToast t={t} title="Job posting created" />;
     });
@@ -66,7 +66,7 @@ export default function JobPostingForm() {
                 <CustomSelect
                   label="Company area"
                   name="company_function"
-                  options={roles}
+                  options={companyFunctions}
                   itemRef=""
                 />
               </div>
@@ -86,6 +86,8 @@ export default function JobPostingForm() {
                   max={Object.entries(experienceLevels).length - 1}
                   onChange={() => {}}
                   valuesName={experienceLevels}
+                  minName="min_experience_level"
+                  maxName="max_experience_level"
                 />
               </div>
             </div>
@@ -101,8 +103,8 @@ export default function JobPostingForm() {
               <div className="">
                 <CustomSelect
                   label="Where is this job based?"
-                  name="role"
-                  options={locations}
+                  name="work_type"
+                  options={workTypes}
                 />
               </div>
               {/* <div className="">
